@@ -1,8 +1,6 @@
-"""Instancias I1-I3 y generador G(n) (propuesta v2, secc. 9.1).
+"""Instancias I1-I3 y generador G(n).
 
-Responsable: Milagros.
-
-Contrato: cada función devuelve (acciones, estado_inicial, objetivo) usando
+Cada función devuelve (acciones, estado_inicial, objetivo) usando
 las funciones de dominio.py.
 """
 
@@ -12,9 +10,31 @@ import dominio
 
 
 def red_i1():
-    """I1 - Juguete (secc. 7.2): una zona, S1-S2 por línea larga, H1 (2 bloques)
-    en S1, T1 (4 bloques) en S2; 1 prioritaria + 2 barrio en S1, 2 industria en S2."""
-    raise NotImplementedError
+    """Construye I1, la instancia de juguete (secc. 7.2).
+
+    Una zona; S1 y S2 unidas por una línea larga; hidráulica H1 (2 bloques) en
+    S1 y térmica T1 (4 bloques) en S2. Demanda: 5 cargas + 1 bloque de
+    auxiliares de T1 = 6; oferta: 2 + 4 = 6 (justa).
+
+    Returns:
+        dominio.Red: La red del juguete.
+    """
+    red = dominio.Red()
+    red.zonas = ["N"]
+    red.subestaciones = {"S1": "N", "S2": "N"}
+    red.lineas = {"L12": ("S1", "S2", "larga")}
+    red.centrales = {
+        "H1": ("S1", "autonomo", 2),
+        "T1": ("S2", "termica", 4),
+    }
+    red.cargas = {
+        "P1": ("S1", "prioritaria"),
+        "B1": ("S1", "normal"),  # barrio
+        "B2": ("S1", "normal"),
+        "I1": ("S2", "normal"),  # industria
+        "I2": ("S2", "normal"),
+    }
+    return red
 
 
 def red_i2():
