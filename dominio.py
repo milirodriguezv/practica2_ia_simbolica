@@ -66,24 +66,27 @@ class Red:
 
     Attributes:
         zonas (list[str]): Zonas eléctricas, que se reponen como islas.
-        subestaciones (dict[str, str]): Subestación -> zona.
+        subestaciones (dict[str, str]): Subestación -> zona, nudo de la red de transporte.
         lineas (dict[str, tuple]): Línea -> (s1, s2, 'corta' | 'larga'), entre
             dos subestaciones de la misma zona.
         centrales (dict[str, tuple]): Central -> (subestación,
             'autonomo' | 'termica', número de bloques).
+             Pueden ser hidráulica (arranque autónomo) o
+             térmica (arranque con bloque en marcha)
         cargas (dict[str, tuple]): Carga -> (subestación,
             'prioritaria' | 'normal').
+            Consumo o tramo de consumo de una subestación (prioritaria o normal)
         interconexiones (list[tuple]): Pares (s1, s2) de subestaciones de zonas
             distintas donde se pueden acoplar.
     """
 
     def __init__(self):
-        self.zonas = []  # [z] zona eléctrica que se repone como isla
-        self.subestaciones = {}  # s -> z nudo de la red de transporte
-        self.lineas = {}  # l -> (s1, s2, 'corta' | 'larga') línea entre dos subestaciones de la misma zona; puede ser corta o larga
-        self.centrales = {}  # c -> (s, 'autonomo' | 'termica', n_bloques) hidráulica (arranque autónomo) o térmica (arranque con bloque en marcha)
-        self.cargas = {}  # k -> (s, 'prioritaria' | 'normal') Consumo o tramo de consumo de una subestación (prioritaria o normal)
-        self.interconexiones = []  # [(s1, s2)] entre zonas distintas Interconexiones entre zonas distintas
+        self.zonas = []  # [z]
+        self.subestaciones = {}  # s -> z
+        self.lineas = {}  # l -> (s1, s2, 'corta' | 'larga')
+        self.centrales = {}  # c -> (s, 'autonomo' | 'termica', n_bloques)
+        self.cargas = {}  # k -> (s, 'prioritaria' | 'normal')
+        self.interconexiones = []  # [(s1, s2)] entre zonas distintas
 
 
 def estado_inicial(red):
@@ -170,7 +173,7 @@ def arrancar_autonomo(red):
 
 
 def activar_bloque(red):
-    """Instancia ActivarBloque(b): una acción por bloque de cada central.
+    """Instancia ActivarBloque(b, c): una acción por bloque de cada central.
 
     PRECOND: EnMarcha(c), no Activado(b).
     EFECTO: Activado(b), Libre(b).
@@ -187,7 +190,7 @@ def activar_bloque(red):
         for bloque in bloques_de_central(red, central):
             acciones.append(
                 Accion(
-                    nombre=atomo("ActivarBloque", bloque),
+                    nombre=atomo("ActivarBloque", bloque, central),
                     coste=COSTE_MANIOBRA,
                     pre_pos=frozenset({atomo("EnMarcha", central)}),
                     pre_neg=frozenset({atomo("Activado", bloque)}),
@@ -199,11 +202,14 @@ def activar_bloque(red):
 
 
 def energizar_corta(red):
-    """Instancia EnergizarCorta(l, origen, destino): dos acciones por línea corta.
+    """Instancia EnergizarCorta(l, origen, destino, z): dos por línea corta.
+
+    Una acción por cada sentido de la línea; z es la zona de ambas subestaciones.
 
     PRECOND: Operativa(l), ConTension(origen), no ConTension(destino).
     EFECTO: ConTension(destino).
-    Estáticos resueltos aquí: Linea(l,s1,s2) en ambos sentidos, Corta(l).
+    Estáticos resueltos aquí: Linea(l,s1,s2) en ambos sentidos, Corta(l),
+        Zona(s1,z), Zona(s2,z).
 
     Args:
         red (Red): Descripción de la red.
@@ -213,12 +219,18 @@ def energizar_corta(red):
     """
     acciones = []
     for linea, (s1, s2, tipo) in red.lineas.items():
-        if tipo != "corta":
+        if tipo != "corta" or red.subestaciones[s1] != red.subestaciones[s2]:
             continue
         for origen, destino in [(s1, s2), (s2, s1)]:
             acciones.append(
                 Accion(
-                    nombre=atomo("EnergizarCorta", linea, origen, destino),
+                    nombre=atomo(
+                        "EnergizarCorta",
+                        linea,
+                        origen,
+                        destino,
+                        red.subestaciones[origen],
+                    ),
                     coste=COSTE_MANIOBRA,
                     pre_pos=frozenset(
                         {
@@ -239,7 +251,7 @@ def energizar_corta(red):
 
 
 def energizar_larga(red):
-    """Instancia EnergizarLarga(l, origen, destino): dos acciones por línea larga.
+    """Instancia EnergizarLarga(l, origen, destino, z): dos por línea larga.
 
     Como EnergizarCorta, pero el origen debe tener carga conectada para evitar
     la sobretensión de una línea larga en vacío (efecto Ferranti).
@@ -247,7 +259,8 @@ def energizar_larga(red):
     PRECOND: Operativa(l), ConTension(origen), Cargada(origen),
         no ConTension(destino).
     EFECTO: ConTension(destino).
-    Estáticos resueltos aquí: Linea(l,s1,s2) en ambos sentidos, Larga(l).
+    Estáticos resueltos aquí: Linea(l,s1,s2) en ambos sentidos, Larga(l),
+        Zona(s1,z), Zona(s2,z).
 
     Args:
         red (Red): Descripción de la red.
@@ -257,12 +270,18 @@ def energizar_larga(red):
     """
     acciones = []
     for linea, (s1, s2, tipo) in red.lineas.items():
-        if tipo != "larga":
+        if tipo != "larga" or red.subestaciones[s1] != red.subestaciones[s2]:
             continue
         for origen, destino in [(s1, s2), (s2, s1)]:
             acciones.append(
                 Accion(
-                    nombre=atomo("EnergizarLarga", linea, origen, destino),
+                    nombre=atomo(
+                        "EnergizarLarga",
+                        linea,
+                        origen,
+                        destino,
+                        red.subestaciones[origen],
+                    ),
                     coste=COSTE_MANIOBRA,
                     pre_pos=frozenset(
                         {
@@ -284,7 +303,7 @@ def energizar_larga(red):
 
 
 def arrancar_termica(red):
-    """Instancia ArrancarTermica(c, s, b): una acción por térmica y bloque ajeno.
+    """Instancia ArrancarTermica(c, s, b, zb, zs), por térmica y bloque ajeno.
 
     El bloque b alimenta los servicios auxiliares y deja de estar libre. Los
     bloques de la propia térmica se excluyen: no pueden estar libres antes de
@@ -315,7 +334,9 @@ def arrancar_termica(red):
             for bloque in bloques_de_central(red, otra):
                 acciones.append(
                     Accion(
-                        nombre=atomo("ArrancarTermica", central, subestacion, bloque),
+                        nombre=atomo(
+                            "ArrancarTermica", central, subestacion, bloque, zb, zs
+                        ),
                         coste=COSTE_MANIOBRA,
                         pre_pos=frozenset(
                             {
@@ -339,7 +360,7 @@ def arrancar_termica(red):
 
 
 def conectar_prioritaria(red):
-    """Instancia ConectarPrioritaria(k, s, c, b), por carga prioritaria y bloque.
+    """Instancia ConectarPrioritaria(k, s, b, zb, zs), por prioritaria y bloque.
 
     PRECOND: ConTension(s), Libre(b), Alcanza(zb,zs), no Suministrada(k).
     EFECTO: Suministrada(k), Usa(k,b), Cargada(s), no Libre(b).
@@ -365,7 +386,7 @@ def conectar_prioritaria(red):
                 acciones.append(
                     Accion(
                         nombre=atomo(
-                            "ConectarPrioritaria", carga, subestacion, central, bloque
+                            "ConectarPrioritaria", carga, subestacion, bloque, zb, zs
                         ),
                         coste=COSTE_MANIOBRA,
                         pre_pos=frozenset(
@@ -390,7 +411,7 @@ def conectar_prioritaria(red):
 
 
 def conectar_carga(red):
-    """Instancia ConectarCarga(k, s, c, b): una acción por carga normal y bloque.
+    """Instancia ConectarCarga(k, s, b, zb, zs), por carga normal y bloque.
 
     PrioridadCubierta(s) se expande al instanciar: se exige Suministrada(p)
     para cada carga prioritaria p de la subestación.
@@ -424,7 +445,7 @@ def conectar_carga(red):
                 acciones.append(
                     Accion(
                         nombre=atomo(
-                            "ConectarCarga", carga, subestacion, central, bloque
+                            "ConectarCarga", carga, subestacion, bloque, zb, zs
                         ),
                         coste=COSTE_MANIOBRA,
                         pre_pos=frozenset(
@@ -490,7 +511,7 @@ def deslastrar(red):
 
 
 def acoplar_zonas(red):
-    """Instancia AcoplarZonas(z1, z2, b1, b2), por interconexión y par de bloques.
+    """Instancia AcoplarZonas(z1, z2, s1, s2, b1, b2), por interconexión y bloques.
 
     Se toma un bloque de cada zona: cada una necesita un bloque libre como
     margen, pero los bloques no se gastan.
@@ -516,7 +537,7 @@ def acoplar_zonas(red):
             for bloque2 in bloques_de_zona(red, z2):
                 acciones.append(
                     Accion(
-                        nombre=atomo("AcoplarZonas", z1, z2, bloque1, bloque2),
+                        nombre=atomo("AcoplarZonas", z1, z2, s1, s2, bloque1, bloque2),
                         coste=COSTE_MANIOBRA,
                         pre_pos=frozenset(
                             {
