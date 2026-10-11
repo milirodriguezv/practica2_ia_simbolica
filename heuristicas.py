@@ -1,34 +1,77 @@
 """Heurísticas independientes del dominio.
 
-Una heurística es una función h(estado, objetivo, acciones) -> número.
+Todas tienen la misma firma, h(estado, objetivo, acciones) -> número, y
+estiman el coste que falta para alcanzar el objetivo desde el estado.
+
+    - h0: siempre 0. Admisible.
+    - hprec: ignora las precondiciones. Admisible en nuestro dominio.
+    - hmax: ignora las listas de eliminación; subobjetivo más caro. Admisible.
+    - hadd: ignora las listas de eliminación; suma de subobjetivos. No admisible.
+
+hmax y hadd trabajan sobre el problema relajado: las acciones no borran nada
+(se ignora dele) y solo cuentan las precondiciones positivas (se ignora
+pre_neg).
 """
 
 import math
 
 
 def h0(estado, objetivo, acciones):
-    """Siempre 0 (coste uniforme). Admisible."""
+    """Heurística nula: convierte A* en búsqueda de coste uniforme.
+
+    Admisible. Sirve de línea base para comparar las demás.
+
+    Args:
+        estado (frozenset[str]): Átomos ciertos en el estado.
+        objetivo (frozenset[str]): Átomos que deben cumplirse.
+        acciones (list[Accion]): Acciones instanciadas del problema.
+
+    Returns:
+        int: Siempre 0.
+    """
     return 0
 
 
 def hprec(estado, objetivo, acciones):
-    """Ignora precondiciones: átomos del objetivo no cumplidos.
+    """Heurística que ignora las precondiciones.
+
+    Cuenta los átomos del objetivo que faltan en el estado. Sin
+    precondiciones, cada uno se conseguiría aplicando directamente una acción.
 
     Admisible en nuestro dominio: ninguna acción añade más de un átomo del
-    objetivo y ninguno se consigue con coste 0.
+    objetivo y ninguno se consigue con una acción de coste 0, así que hacen
+    falta al menos tantas acciones de coste 1 como átomos faltan.
 
-    Si ninguna acción tuviera precondiciones, podrías aplicar directamente
-    una acción que consiga cada átomo que falta del objetivo
-    (está en el estado pero no en el objetivo).
-    Como en el dominio cada acción consigue como mucho un átomo del objetivo
-    y ninguno se consigue con coste 0, harían falta exactamente tantas
-    acciones de coste 1 como átomos faltan.
+    Args:
+        estado (frozenset[str]): Átomos ciertos en el estado.
+        objetivo (frozenset[str]): Átomos que deben cumplirse.
+        acciones (list[Accion]): Acciones instanciadas del problema (no se usan).
+
+    Returns:
+        int: Número de átomos del objetivo que no están en el estado.
     """
     return len(objetivo - estado)
 
 
 def hmax(estado, objetivo, acciones):
-    """Ignora DEL: coste del subobjetivo más caro. Admisible."""
+    """Heurística h_max: coste del subobjetivo más caro, ignorando DEL.
+
+    Calcula por rondas, hasta que nada cambia, el coste de alcanzar cada átomo
+    en el problema relajado: 0 si ya está en el estado; si no, el coste de la
+    acción más barata que lo añade, donde una acción cuesta su coste más el de
+    su precondición más cara.
+
+    Admisible: supone que, al conseguir lo más caro, lo demás ya está hecho.
+
+    Args:
+        estado (frozenset[str]): Átomos ciertos en el estado.
+        objetivo (frozenset[str]): Átomos que deben cumplirse.
+        acciones (list[Accion]): Acciones instanciadas del problema.
+
+    Returns:
+        float: Máximo de los costes de los átomos del objetivo, o math.inf si
+        alguno no es alcanzable ni en el problema relajado.
+    """
     costes = {atomo: 0 for atomo in estado}
     cambio = True
     while cambio:
@@ -52,7 +95,23 @@ def hmax(estado, objetivo, acciones):
 
 
 def hadd(estado, objetivo, acciones):
-    """Ignora DEL: suma de costes de los subobjetivos. No admisible."""
+    """Heurística h_add: suma de los costes de los subobjetivos, ignorando DEL.
+
+    Mismo cálculo que hmax, pero una acción cuesta su coste más la suma de los
+    costes de sus precondiciones, y el resultado es la suma sobre el objetivo.
+
+    No admisible: supone que los subobjetivos son independientes, así que
+    cuenta varias veces las acciones que comparten.
+
+    Args:
+        estado (frozenset[str]): Átomos ciertos en el estado.
+        objetivo (frozenset[str]): Átomos que deben cumplirse.
+        acciones (list[Accion]): Acciones instanciadas del problema.
+
+    Returns:
+        float: Suma de los costes de los átomos del objetivo, o math.inf si
+        alguno no es alcanzable ni en el problema relajado.
+    """
     costes = {atomo: 0 for atomo in estado}
     cambio = True
     while cambio:
@@ -74,7 +133,21 @@ def hadd(estado, objetivo, acciones):
 
 
 def hff(estado, objetivo, acciones):
-    """(Opcional) Ignora DEL: longitud de un plan relajado. No admisible."""
+    """Heurística h_FF: coste de un plan relajado (opcional, sin implementar).
+
+    No admisible. No está en HEURISTICAS mientras no se implemente.
+
+    Args:
+        estado (frozenset[str]): Átomos ciertos en el estado.
+        objetivo (frozenset[str]): Átomos que deben cumplirse.
+        acciones (list[Accion]): Acciones instanciadas del problema.
+
+    Returns:
+        float: Coste del plan relajado extraído.
+
+    Raises:
+        NotImplementedError: Pendiente de implementar.
+    """
     raise NotImplementedError
 
 
