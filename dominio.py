@@ -251,12 +251,12 @@ def energizar_corta(red):
 
 
 def energizar_larga(red):
-    """Instancia EnergizarLarga(l, origen, destino, z): dos por línea larga.
+    """Instancia EnergizarLarga(l, origen, destino, z, k): dos por línea larga.
 
     Como EnergizarCorta, pero el origen debe tener carga conectada para evitar
     la sobretensión de una línea larga en vacío (efecto Ferranti).
 
-    PRECOND: Operativa(l), ConTension(origen), Cargada(origen),
+    PRECOND: Operativa(l), ConTension(origen), Suministrada(k),
         no ConTension(destino).
     EFECTO: ConTension(destino).
     Estáticos resueltos aquí: Linea(l,s1,s2) en ambos sentidos, Larga(l),
@@ -273,32 +273,36 @@ def energizar_larga(red):
         if tipo != "larga" or red.subestaciones[s1] != red.subestaciones[s2]:
             continue
         for origen, destino in [(s1, s2), (s2, s1)]:
-            acciones.append(
-                Accion(
-                    nombre=atomo(
-                        "EnergizarLarga",
-                        linea,
-                        origen,
-                        destino,
-                        red.subestaciones[origen],
-                    ),
-                    coste=COSTE_MANIOBRA,
-                    pre_pos=frozenset(
-                        {
-                            atomo("ConTension", origen),
-                            atomo("Operativa", linea),
-                            atomo("Cargada", origen),
-                        }
-                    ),
-                    pre_neg=frozenset({atomo("ConTension", destino)}),
-                    add=frozenset(
-                        {
-                            atomo("ConTension", destino),
-                        }
-                    ),
-                    dele=frozenset(),
+            for carga, (subestacion, _) in red.cargas.items():
+                if subestacion != origen:
+                    continue
+                acciones.append(
+                    Accion(
+                        nombre=atomo(
+                            "EnergizarLarga",
+                            linea,
+                            origen,
+                            destino,
+                            red.subestaciones[origen],
+                            carga,
+                        ),
+                        coste=COSTE_MANIOBRA,
+                        pre_pos=frozenset(
+                            {
+                                atomo("ConTension", origen),
+                                atomo("Operativa", linea),
+                                atomo("Suministrada", carga),
+                            }
+                        ),
+                        pre_neg=frozenset({atomo("ConTension", destino)}),
+                        add=frozenset(
+                            {
+                                atomo("ConTension", destino),
+                            }
+                        ),
+                        dele=frozenset(),
+                    )
                 )
-            )
     return acciones
 
 
@@ -363,7 +367,7 @@ def conectar_prioritaria(red):
     """Instancia ConectarPrioritaria(k, s, b, zb, zs), por prioritaria y bloque.
 
     PRECOND: ConTension(s), Libre(b), Alcanza(zb,zs), no Suministrada(k).
-    EFECTO: Suministrada(k), Usa(k,b), Cargada(s), no Libre(b).
+    EFECTO: Suministrada(k), Usa(k,b), no Libre(b).
     Estáticos resueltos aquí: Prioritaria(k), CargaEn(k,s), Zona(b,zb),
         Zona(s,zs).
 
@@ -401,7 +405,6 @@ def conectar_prioritaria(red):
                             {
                                 atomo("Suministrada", carga),
                                 atomo("Usa", carga, bloque),
-                                atomo("Cargada", subestacion),
                             }
                         ),
                         dele=frozenset({atomo("Libre", bloque)}),
@@ -418,7 +421,7 @@ def conectar_carga(red):
 
     PRECOND: ConTension(s), Libre(b), Alcanza(zb,zs), Suministrada(p) de cada
         prioritaria de s, no Suministrada(k).
-    EFECTO: Suministrada(k), Usa(k,b), Cargada(s), no Libre(b).
+    EFECTO: Suministrada(k), Usa(k,b), no Libre(b).
     Estáticos resueltos aquí: Normal(k), CargaEn(k,s), Zona(b,zb), Zona(s,zs).
 
     Args:
@@ -461,7 +464,6 @@ def conectar_carga(red):
                             {
                                 atomo("Suministrada", carga),
                                 atomo("Usa", carga, bloque),
-                                atomo("Cargada", subestacion),
                             }
                         ),
                         dele=frozenset({atomo("Libre", bloque)}),
@@ -646,18 +648,3 @@ def problema(red):
         tuple: (acciones, estado_inicial, objetivo).
     """
     return instanciar(red), estado_inicial(red), objetivo(red)
-
-
-def problema_agregado(red):
-    """Construye el problema en versión agregada (contadores por zona).
-
-    Args:
-        red (Red): Descripción de la red.
-
-    Returns:
-        tuple: (acciones, estado_inicial, objetivo).
-
-    Raises:
-        NotImplementedError: Pendiente de implementar.
-    """
-    raise NotImplementedError

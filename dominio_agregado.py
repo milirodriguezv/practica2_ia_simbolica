@@ -30,8 +30,7 @@ En todo estado alcanzable hay exactamente un átomo Libres(z,·) por zona y un
 Activados(c,·) por central: el estado inicial pone uno de cada, y toda
 acción que borra uno añade otro del mismo contador.
 
-La semántica es la misma que la de dominio.py, regla por regla (incluidas sus
-particularidades, p. ej. Deslastrar no borra Cargada(s)). Las acciones que no
+La semántica es la misma que la de dominio.py, regla por regla. Las acciones que no
 tocan bloques (ArrancarAutonomo, EnergizarCorta, EnergizarLarga y
 ExtenderAlcance) son idénticas y se importan de dominio.py.
 """
@@ -171,7 +170,9 @@ def arrancar_termica_agregado(red):
             for n in range(1, maximo_libres(red, zb) + 1):
                 acciones.append(
                     Accion(
-                        nombre=atomo("ArrancarTermica", central, subestacion, zb, zs, n),
+                        nombre=atomo(
+                            "ArrancarTermica", central, subestacion, zb, zs, n
+                        ),
                         coste=COSTE_MANIOBRA,
                         pre_pos=frozenset(
                             {
@@ -232,7 +233,6 @@ def _conectar(red, esquema, carga, subestacion, extra_pre):
                         {
                             atomo("Suministrada", carga),
                             atomo("Usa", carga, zb),
-                            atomo("Cargada", subestacion),
                             atomo("Libres", zb, n - 1),
                         }
                     ),
@@ -302,8 +302,7 @@ def deslastrar_agregado(red):
     """Instancia Deslastrar(k, z, n), por carga normal, zona y valor.
 
     Desconecta la carga y su bloque vuelve a estar libre en la zona z de la
-    que salió. Las prioritarias nunca se deslastran. Como en la versión
-    individual, Cargada(s) no se borra.
+    que salió. Las prioritarias nunca se deslastran.
 
     PRECOND: Usa(k,z), Libres(z,n) con n < máximo de la zona.
     EFECTO: Libres(z,n+1), no Libres(z,n), no Usa(k,z), no Suministrada(k).

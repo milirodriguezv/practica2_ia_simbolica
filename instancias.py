@@ -47,7 +47,9 @@ def _referencias(red):
     for s1, s2 in red.interconexiones:
         for s in (s1, s2):
             if s not in red.subestaciones:
-                problemas.append(f"La interconexión ({s1}, {s2}) usa {s}, que no existe.")
+                problemas.append(
+                    f"La interconexión ({s1}, {s2}) usa {s}, que no existe."
+                )
     return problemas
 
 
@@ -121,6 +123,11 @@ def validar(red):
         ]
         if not autonomas:
             problemas.append(f"La zona {zona} no tiene ninguna central autónoma.")
+        elif len(autonomas) > 1:
+            problemas.append(
+                f"La zona {zona} tiene {len(autonomas)} centrales autónomas "
+                "(el modelo supone una isla por zona)."
+            )
 
     # b. Líneas dentro de una misma zona.
     for l, (s1, s2, _) in red.lineas.items():
@@ -471,7 +478,11 @@ def red_generada(n, margen=1.0, semilla=0):
     # Generador propio: no altera el estado global de random.
     rng = random.Random(semilla)
     red = dominio.Red()
-    contadores = {"P": 0, "B": 0, "T": 0}  # último número de hospitales, normales y térmicas
+    contadores = {
+        "P": 0,
+        "B": 0,
+        "T": 0,
+    }  # último número de hospitales, normales y térmicas
 
     # 1. Zonas y reparto de subestaciones (las primeras zonas, una más).
     n_zonas = max(1, n // SUBESTACIONES_POR_ZONA)
@@ -545,4 +556,6 @@ REDES = {"I1": red_i1, "I2": red_i2, "I3": red_i3}
 def cargar(nombre, agregada=True):
     """Devuelve (acciones, estado_inicial, objetivo) de la instancia pedida."""
     red = REDES[nombre]()
-    return dominio_agregado.problema_agregado(red) if agregada else dominio.problema(red)
+    return (
+        dominio_agregado.problema_agregado(red) if agregada else dominio.problema(red)
+    )

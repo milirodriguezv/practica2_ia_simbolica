@@ -63,9 +63,8 @@ def disparo_central(estado, central, red):
       (D) Sin cascada: si un bloque de c era Auxiliar(b,T) de una térmica T en
           marcha, T sigue en marcha y Auxiliar(b,T) se queda. Por qué: los
           auxiliares solo hacen falta para arrancar.
-      (E) Las subestaciones conservan ConTension y Cargada. Por qué:
-          simplificación, otras fuentes de la isla mantienen la tensión (y
-          Cargada nunca se borra, igual que en Deslastrar).
+      (E) Las subestaciones conservan ConTension. Por qué:
+          simplificación, otras fuentes de la isla mantienen la tensión.
 
     Args:
         estado (frozenset[str]): Estado real antes del evento.
@@ -247,8 +246,9 @@ def ejecutar_con_fallos(
     }
 
     # 1. Plan inicial.
-    plan, est = buscar(acciones, inicial, objetivo, heuristica, modo,
-                       limite_tiempo, limite_nodos)
+    plan, est = buscar(
+        acciones, inicial, objetivo, heuristica, modo, limite_tiempo, limite_nodos
+    )
     resumen["tiempo_plan_original"] = est["tiempo"]
     if plan is None:
         resumen["motivo"] = est["resultado"]
@@ -283,8 +283,15 @@ def ejecutar_con_fallos(
         # el resto del plan sigue llevando al objetivo desde él.
         valido, _ = validar_plan(pendiente, estado_real, objetivo)
         if not valido:
-            plan, est = buscar(acciones, estado_real, objetivo, heuristica,
-                               modo, limite_tiempo, limite_nodos)
+            plan, est = buscar(
+                acciones,
+                estado_real,
+                objetivo,
+                heuristica,
+                modo,
+                limite_tiempo,
+                limite_nodos,
+            )
             resumen["replanificaciones"] += 1
             resumen["tiempo_replanificacion"] += est["tiempo"]
             if plan is None:
@@ -304,7 +311,5 @@ def ejecutar_con_fallos(
     if objetivo <= estado_real:
         resumen["resuelto"] = True
         resumen["motivo"] = "resuelto"
-        resumen["maniobras_extra"] = (
-            resumen["coste"] - resumen["coste_plan_original"]
-        )
+        resumen["maniobras_extra"] = resumen["coste"] - resumen["coste_plan_original"]
     return resumen
