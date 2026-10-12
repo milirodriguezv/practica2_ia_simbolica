@@ -1,0 +1,13 @@
+instancia,tipo_fallo,prob_fallo,ejecuciones,eventos_medios,pct_resueltas,pct_sin_solucion,pct_limite,maniobras_extra_media,cargas_perdidas_media,replanificaciones_media,tiempo_replanificacion_medio
+I2,linea,0.05,15,0.8,46.7,53.3,0.0,0,0,0.53,0.02
+I2,linea,0.1,15,1.07,40.0,60.0,0.0,0,0,0.6,0.02
+I2,linea,0.2,15,0.93,6.7,93.3,0.0,0,0,0.93,0.03
+I2,central,0.05,15,0.8,20.0,80.0,0.0,0,0.33,0.8,0.04
+I2,central,0.1,15,0.87,13.3,86.7,0.0,0,0.33,0.87,0.03
+I2,central,0.2,15,0.93,6.7,93.3,0.0,0,0.13,0.93,0.04
+I2-reserva,linea,0.05,15,1.47,100.0,0.0,0.0,0,0,0.2,0.19
+I2-reserva,linea,0.1,15,2.8,100.0,0.0,0.0,0,0,0.27,0.44
+I2-reserva,linea,0.2,15,4.4,66.7,33.3,0.0,0,0,1.07,1.87
+I2-reserva,central,0.05,15,1.07,60.0,40.0,0.0,0.67,0.53,0.93,0.22
+I2-reserva,central,0.1,15,1.33,20.0,80.0,0.0,0,0.53,1.13,0.14
+I2-reserva,central,0.2,15,1.33,6.7,93.3,0.0,0,0.2,1.07,0.14

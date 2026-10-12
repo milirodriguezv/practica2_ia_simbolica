@@ -246,6 +246,50 @@ def red_i2():
     return red
 
 
+def red_i2_reserva():
+    """Construye I2 con reserva: I2 más líneas dobles y una térmica de reserva.
+
+    Existe solo para el experimento E4 (fallos y replanificación). I2 tiene
+    oferta justa y un único camino a cada subestación, así que casi cualquier
+    fallo la deja sin solución y E4 no podría medir recuperaciones. Esta
+    variante añade la redundancia mínima para que la haya:
+        - Cada línea tiene una gemela en paralelo, del mismo tipo (doble
+          circuito): L12b, L23b, L45b y L46b. Si una se avería, la otra
+          lleva la tensión por el mismo camino.
+        - Una térmica de reserva T3 (2 bloques) en S6, junto a T2. Puede
+          sustituir a una térmica que dispare.
+
+    Por qué así y no de otra forma (medido con A* + hprec, bloques
+    individuales):
+        - Líneas que cierran un anillo (S1-S3, S5-S6) multiplican los órdenes
+          posibles de energizar: A* + hprec no terminaba en 1 M de nodos. Una
+          línea en paralelo no crea estados nuevos (la subestación destino
+          queda con tensión igual), así que la búsqueda no crece.
+        - Un bloque de sobra en una hidráulica abarata el plan: compensaría
+          no arrancar una térmica (1 maniobra en vez de 3) y el óptimo
+          bajaría de 23 a 20. Una térmica de 2 bloques cuesta lo mismo que
+          T1 o T2 (arrancar + 2 activaciones para ganar 1 bloque neto), así
+          que sin fallos no compensa usarla y el óptimo sigue siendo 23.
+        - En S6 (detrás de la línea larga) la búsqueda crece menos que en
+          S2, S3 o S5: 166 k nodos expandidos frente a 308-343 k.
+
+    Oferta: 2 + 2 + 2 + 2 + 2 = 10 bloques; demanda sin fallos: 8 (6 cargas
+    + 2 bloques de auxiliares). Coste óptimo: 23, igual que I2 (A* + hprec:
+    unos 166 k nodos expandidos y 4,6 s).
+
+    No está en REDES: E1-E3 y la línea de órdenes no cambian.
+
+    Returns:
+        dominio.Red: La red Norte/Sur con reserva.
+    """
+    red = red_i2()
+    for linea in list(red.lineas):
+        s1, s2, tipo = red.lineas[linea]
+        red.lineas[linea + "b"] = (s1, s2, tipo)  # segundo circuito
+    red.centrales["T3"] = ("S6", "termica", 2)  # térmica de reserva
+    return red
+
+
 def red_i3():
     """Construye I3, la red peninsular simplificada (secc. 7.2).
 
