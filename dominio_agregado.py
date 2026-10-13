@@ -247,7 +247,7 @@ def conectar_prioritaria_agregado(red):
 
     PRECOND: ConTension(s), Libres(zb,n) con n >= 1, Alcanza(zb,zs),
         no Suministrada(k).
-    EFECTO: Suministrada(k), Usa(k,zb), Cargada(s), Libres(zb,n-1),
+    EFECTO: Suministrada(k), Usa(k,zb), Libres(zb,n-1),
         no Libres(zb,n).
     Estáticos resueltos aquí: Prioritaria(k), CargaEn(k,s), Zona(s,zs),
         Sig(n-1,n).
@@ -274,7 +274,7 @@ def conectar_carga_agregado(red):
 
     PRECOND: ConTension(s), Libres(zb,n) con n >= 1, Alcanza(zb,zs),
         Suministrada(p) de cada prioritaria de s, no Suministrada(k).
-    EFECTO: Suministrada(k), Usa(k,zb), Cargada(s), Libres(zb,n-1),
+    EFECTO: Suministrada(k), Usa(k,zb), Libres(zb,n-1),
         no Libres(zb,n).
     Estáticos resueltos aquí: Normal(k), CargaEn(k,s), Zona(s,zs),
         Sig(n-1,n).

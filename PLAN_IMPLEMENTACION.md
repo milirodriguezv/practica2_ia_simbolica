@@ -16,7 +16,7 @@ Think of it as a game with these pieces:
 | Line `L` | A cable between two substations of the same zone. A *larga* (long) one can only be lit from a side that already feeds a load. Otherwise the cable "over-voltages" (Ferranti effect). | `Operativa(L)` |
 | Plant `C` | Produces energy. *autonomo* starts alone. *termica* needs voltage at its substation **and** one free block from another plant (to power its own machinery, its "auxiliaries"). | `Operativa(C)`, `EnMarcha(C)` |
 | Block `b` | One unit of energy from a plant. It must be **activated**, then it is **free** until a load (or a thermal start) uses it. | `Activado(b)`, `Libre(b)`, `Usa(k,b)`, `Auxiliar(b,C)` |
-| Load `k` | A consumer. Each uses exactly one block. *prioritaria* = hospital. A normal load needs the hospitals of its substation connected first. | `Suministrada(k)`, `Cargada(S)` |
+| Load `k` | A consumer. Each uses exactly one block. *prioritaria* = hospital. A normal load needs the hospitals of its substation connected first. | `Suministrada(k)` |
 | Zone `z` | An island restored on its own. Two zones can share blocks only after being coupled. | `Alcanza(z1,z2)` |
 
 **Start:** everything dark, everything working (`Operativa`), each zone reaches itself (`Alcanza(z,z)`).
@@ -244,7 +244,7 @@ The planner only knows sets of atoms, so "n" is part of the atom name: `Libres(N
 
 **A thermal can't use its own blocks, and no extra rule is needed for that.** Its blocks are only activated with `EnMarcha(c)`, and `ArrancarTermica` requires `c` to be stopped, so none of them can be in `Libres` at that moment (explained in a code comment).
 
-**Quirks of the individual version kept on purpose** (same semantics, so E3 compares like with like): `Deslastrar` does not delete `Cargada(s)`; `ActivarBloque` does not require `Operativa(c)`; only one coupling action per interconnection, in its listed direction.
+**Quirks of the individual version kept on purpose** (same semantics, so E3 compares like with like): ~~`Deslastrar` does not delete `Cargada(s)`~~ (gone: `Cargada` was removed on 2026-10-12, see section 7.1); `ActivarBloque` does not require `Operativa(c)`; only one coupling action per interconnection, in its listed direction.
 
 Initial state adds `Libres(z,0)` and `Activados(c,0)`. Goal is unchanged. The upper bound of each counter is the number of blocks in that zone/plant. This also keeps the "no action achieves two goal atoms" property, so hprec stays admissible.
 
@@ -420,15 +420,15 @@ I2, `prob_fallo = 0.1`, A*+hprec (fastest optimal config on individual I2, cheap
 ## 4b. Experiment E4: failures and replanning (✅ done, Milagros)
 
 ### What was added
-- `instancias.red_i2_reserva()`: I2 plus **twin lines** (`L12b`, `L23b`, `L45b`, `L46b`, each parallel to the original and of the same type) and a **spare thermal** `T3` (2 blocks) at S6. Not in `REDES` (E1–E3 and the CLI are unchanged). `validar` = [], optimum **23** (same as I2: the spares are never used without failures), A*+hprec 166,173 expanded, ~4.5 s.
+- `instancias.red_i2_reserva()`: I2 plus **twin lines** (`L12b`, `L23b`, `L45b`, `L46b`, each parallel to the original and of the same type) and a **spare thermal** `T3` (2 blocks) at S6. Not in `REDES` (E1–E3 and the CLI are unchanged). `validar` = [], optimum **23** (same as I2: the spares are never used without failures), A*+hprec 147,846 expanded, 3.4 s.
 - `experimentos.e4()` plus helpers `_e4_*` and constants `E4_*`. Run: `python3 experimentos.py E4`. Outputs: `resultados/e4.csv` (one row per run), `resultados/e4_resumen.csv`, `figuras/e4.png`.
 
 ### Design decisions (with the why)
 - **Why I2-reserva exists:** I2 has exact supply and one path per substation, so almost any failure is final. Without spares, E4 could only measure "% unsolvable".
 - **Why twin lines and not lines closing a loop:** a loop line (S1–S3, S5–S6) multiplies the possible energizing orders, and A*+hprec didn't finish in 1M nodes. A parallel line creates no new states (the destination ends up lit either way), so the search doesn't grow.
-- **Why a 2-block thermal as the spare and not a spare block:** a spare block on a hydro or thermal plant makes the plan *cheaper* (optimum 20–21), so "extra maneuvers" would be measured against a different optimum. A 2-block thermal costs the same as using T1/T2 (start + 2 activations for 1 net block), so the optimum stays 23. It sits at S6 because the search grows least there (166k nodes vs 308–343k at S2/S3/S5).
+- **Why a 2-block thermal as the spare and not a spare block:** a spare block on a hydro or thermal plant makes the plan *cheaper* (optimum 20–21), so "extra maneuvers" would be measured against a different optimum. A 2-block thermal costs the same as using T1/T2 (start + 2 activations for 1 net block), so the optimum stays 23. It sits at S6 because the search grows least there (compared with S2/S3/S5).
 - **Why I3 and I1 are left out:** with individual blocks, only A*+hadd solves I3, in ~97 s per search, which is too slow to repeat for many seeds. I1 is a toy with no redundancy and adds nothing beyond I2.
-- **Factors:** failure type (lines only vs plants only, to compare them) × `prob_fallo` ∈ {0.05, 0.1, 0.2} × 15 seeds (`SEMILLA + i`). The whole E4 takes ~9.5 min (180 runs, ~1 GB RAM peak).
+- **Factors:** failure type (lines only vs plants only, to compare them) × `prob_fallo` ∈ {0.05, 0.1, 0.2} × 15 seeds (`SEMILLA + i`). The whole E4 takes 443 s (~7.4 min, 180 runs).
 - **Paired comparison:** the same seed rolls the die the same way for both failure types, so failures land on the same steps.
 - **A* + hprec:** admissible, so every plan and replan is optimal and "extra" is measured against the minimum. It's the fastest optimal config on individual I2. Limits: 60 s / 300k nodes per search (never reached).
 
@@ -436,20 +436,20 @@ I2, `prob_fallo = 0.1`, A*+hprec (fastest optimal config on individual I2, cheap
 
 | Instance | Failure | p | Events | % solved | % unsolvable | Extra | Lost loads | Replans | Replan time (s) |
 |---|---|---|---|---|---|---|---|---|---|
-| I2 | line | 0.05 | 0.80 | 46.7 | 53.3 | 0 | 0 | 0.53 | 0.02 |
-| I2 | line | 0.1 | 1.07 | 40.0 | 60.0 | 0 | 0 | 0.60 | 0.02 |
-| I2 | line | 0.2 | 0.93 | 6.7 | 93.3 | 0 | 0 | 0.93 | 0.03 |
-| I2 | plant | 0.05 | 0.80 | 20.0 | 80.0 | 0 | 0.33 | 0.80 | 0.04 |
-| I2 | plant | 0.1 | 0.87 | 13.3 | 86.7 | 0 | 0.33 | 0.87 | 0.03 |
-| I2 | plant | 0.2 | 0.93 | 6.7 | 93.3 | 0 | 0.13 | 0.93 | 0.04 |
-| I2-reserva | line | 0.05 | 1.47 | 100.0 | 0.0 | 0 | 0 | 0.20 | 0.19 |
-| I2-reserva | line | 0.1 | 2.80 | 100.0 | 0.0 | 0 | 0 | 0.27 | 0.44 |
-| I2-reserva | line | 0.2 | 4.40 | 66.7 | 33.3 | 0 | 0 | 1.07 | 1.87 |
-| I2-reserva | plant | 0.05 | 1.07 | 60.0 | 40.0 | 0.67 | 0.53 | 0.93 | 0.22 |
-| I2-reserva | plant | 0.1 | 1.33 | 20.0 | 80.0 | 0 | 0.53 | 1.13 | 0.14 |
-| I2-reserva | plant | 0.2 | 1.33 | 6.7 | 93.3 | 0 | 0.20 | 1.07 | 0.14 |
+| I2 | line | 0.05 | 0.80 | 46.7 | 53.3 | 0 | 0 | 0.53 | 0.01 |
+| I2 | line | 0.1 | 1.07 | 40.0 | 60.0 | 0 | 0 | 0.60 | 0.01 |
+| I2 | line | 0.2 | 0.93 | 6.7 | 93.3 | 0 | 0 | 0.93 | 0.02 |
+| I2 | plant | 0.05 | 0.80 | 20.0 | 80.0 | 0 | 0.33 | 0.80 | 0.02 |
+| I2 | plant | 0.1 | 0.87 | 13.3 | 86.7 | 0 | 0.33 | 0.87 | 0.02 |
+| I2 | plant | 0.2 | 0.93 | 6.7 | 93.3 | 0 | 0.13 | 0.93 | 0.02 |
+| I2-reserva | line | 0.05 | 1.47 | 100.0 | 0.0 | 0 | 0 | 0.20 | 0.16 |
+| I2-reserva | line | 0.1 | 2.80 | 100.0 | 0.0 | 0 | 0 | 0.27 | 0.39 |
+| I2-reserva | line | 0.2 | 4.40 | 66.7 | 33.3 | 0 | 0 | 1.07 | 1.58 |
+| I2-reserva | plant | 0.05 | 1.07 | 60.0 | 40.0 | 0.67 | 0.53 | 0.93 | 0.19 |
+| I2-reserva | plant | 0.1 | 1.33 | 20.0 | 80.0 | 0 | 0.53 | 1.13 | 0.11 |
+| I2-reserva | plant | 0.2 | 1.33 | 6.7 | 93.3 | 0 | 0.2 | 1.07 | 0.10 |
 
-Checked by the main session: `validar` and optimum 23 of I2-reserva; two CSV rows re-run gave identical results (reserva/plant/p=0.05/seed 8: T1 trips at step 16, B2 lost, solved with +3; reserva/line/p=0.2: L12b then L12 fail before use → `sin_solucion`).
+Checked by the main session: `validar` and optimum 23 of I2-reserva; individual runs re-executed by hand match the CSV (e.g. reserva/plant/p=0.05/seed 8: T1 trips at step 16, B2 lost, solved with +3; reserva/line/p=0.2/seed 1: L12b then L12 fail before use → `sin_solucion`).
 
 ### Reading
 - **Hypothesis "trips cost more than line failures": supported on solvability and lost loads.** With redundancy, line failures are survived 100/100/67% of the time vs 60/20/7% for trips. Only trips lose loads (by construction: a line failure never disconnects a load in our model).
@@ -457,7 +457,7 @@ Checked by the main session: `validar` and optimum 23 of I2-reserva; two CSV row
 - **The redundancy is uneven:** every line has a 1:1 twin, but four plants share one spare thermal. That favors lines; mention it.
 - **Why trips are often fatal even with the spare:** a hydro trip (H1/H2) is always fatal (each zone's only plant that starts alone). H1 tripping even after starting leaves zone N with no free block, so T1 can't start and the zones can't couple (both need a free block). Any second trip is fatal (only one spare).
 - **Oddity:** the mean number of events barely grows with p (I2 line: 0.80 → 1.07 → 0.93; I2-reserva plant: 1.07 → 1.33 → 1.33), because a run stops at its first fatal failure. Higher p brings the fatal failure earlier, which leaves fewer steps for more failures.
-- **Possible speed-up (not done):** ~90% of runtime is the same 4.5 s initial search repeated in each I2-reserva run. An optional "initial plan" parameter in `ejecutar_con_fallos` would remove it.
+- **Possible speed-up (not done):** most of the runtime is the same 3.4 s initial search repeated in each I2-reserva run. An optional "initial plan" parameter in `ejecutar_con_fallos` would remove it.
 
 ---
 
@@ -475,6 +475,34 @@ Checked by the main session: `validar` and optimum 23 of I2-reserva; two CSV row
 ### Verification
 Generate I1 frames (15 images: initial + 14 steps) and open a couple to check them visually.
 
+### ✅ Done: implemented in `visualizacion.py` (branch `feature/visualizacion-plan`)
+
+**Interface:**
+- `dibujar_red(red, estado, ax=None, titulo=None, pos=None) -> Axes`: draws one state.
+- `fotogramas(red, plan, inicial, prefijo) -> list[str]`: applies the plan with `dominio.resultado()` and saves `figuras/<prefijo>_00.png` (`Paso 0: estado inicial`), `_01.png` (`Paso 1: <action>`)…
+- `posiciones(red)` (layout, computed once per network) and `grafo(red)` (`nx.MultiGraph`).
+- `python3 visualizacion.py` regenerates the I1 frames: A*+hmax on the **individual** version (890 expanded, 0.1 s), cost 14, 15 images `figuras/i1_00.png` … `i1_14.png`. **Decision (Milagros):** the frames use the individual plan because its titles name the block used (`ActivarBloque(bT1_2,T1)`, `ConectarCarga(I2,S2,bT1_4,N,N)`), easier to explain than the aggregated counters (`ActivarBloque(T1,N,0,0)`). The drawing is the same with either version.
+
+**Design decisions (with the why):**
+- **Only atoms that exist in both versions** (`ConTension`, `EnMarcha`, `Operativa`, `Suministrada`, `Alcanza`), so the same function draws individual and aggregated states.
+- **Fixed, two-level layout:** zone centres on a circle, then `spring_layout(seed=0)` for each zone's substations around its centre. Plain `spring_layout` mixed I3's zones together. The zone graph is built in a fixed order because `g.subgraph()` changed node order between Python runs and flipped the layout. It's computed once, so nodes never move between frames.
+- **`MultiGraph`, with parallel lines drawn offset:** a simple `Graph` would merge the twin lines of `red_i2_reserva` into one.
+- **Colours:**
+  - Substations: grey = no voltage, yellow = voltage.
+  - Lines: short solid, long dashed; a failed line (no `Operativa`) is red with an X, useful for replanning frames.
+  - Interconnections: dotted purple, thicker once the zones are coupled (`Alcanza`).
+- **Labels next to each substation:** plants `H1 ✓ en marcha` / `✗ parada` / `averiada`, loads `P1 (H) ✓` (H = hospital). Green when done. The side is chosen to avoid neighbours.
+
+**Checked visually (main session too):**
+- I1 frames 00, 05 (`EnergizarLarga`, S2 lights up, with P1 as the connected load), 07 and 14 (everything green).
+- I3 final state: 4 zones well separated, couplings drawn thick.
+- I2 and `red_i2_reserva` (twin lines visible, failed line and failed plant drawn in red).
+- Same network ⇒ identical image across runs.
+
+**Limitations:**
+- Blocks aren't drawn (they don't exist in both versions), so `ActivarBloque` frames only change the title.
+- Label placement is a heuristic: dense G(n) networks may still overlap. In `red_i2_reserva`, twin line names sit close together.
+
 ---
 
 ## 6. Order of work and checkpoints
@@ -487,7 +515,7 @@ Generate I1 frames (15 images: initial + 14 steps) and open a couple to check th
 | 4 | aggregated version | 1 | I1 aggregated = 14; node reduction on I1–I3 | ✅ done (`dominio_agregado.py`; I3 resized) |
 | 5 | replanning | 1, 2 | p=0 sanity; I2 results with seeds | ✅ done (`replanificacion.py`; I1–I3 have no redundancy, see finding) |
 | 5b | E4 (failures experiment) | 5 | I2 / I2-reserva table + figure | ✅ done (`e4()`, `red_i2_reserva`) |
-| 6 | visualisation | 2 | I1 frames saved | pending |
+| 6 | visualisation | 2 | I1 frames saved | ✅ done (15 frames `figuras/i1_*.png`) |
 
 **Summary of optimal costs:** I1 = 14, I2 = 23, I3 = 26 (all equal to the counting bound; same in both versions).
 
@@ -497,7 +525,8 @@ After each part: run it, report the real output, and stop for your review if you
 
 ## 7. Things noticed in Eloísa's `dominio.py` (not touching them, just flagging)
 
-1. **`Cargada(S)` is never deleted.** `Deslastrar` removes the load but the substation keeps counting as "feeding a load", so a long line could be lit after shedding its only load. It's probably minor, but someone could ask about it in the defense.
+1. ✅ ~~**`Cargada(S)` is never deleted.**~~ **Fixed by Eloísa (commit `689c54f` "quitar cargada", 2026-10-12):** `Cargada` no longer exists. `EnergizarLarga` now has one copy per load k of the origin substation and requires `Suministrada(k)`: a load must be connected **right now**, so shedding the only load blocks the long line again. The aggregated version imports `energizar_larga` from `dominio.py`, so both versions stay identical (stale docstrings fixed). The same commit also: removed the `dominio.problema_agregado` stub; added a `validar` check "at most one autonomous plant per zone" (I1–I3, I2-reserva and G(8) seeds 0–2 still pass); and reformatted `instancias.py` / `replanificacion.py` (rule E of `disparo_central` no longer mentions `Cargada`).
+   **Re-checked after the change:** optima unchanged (I1 14 both versions; I2 23 both; I3 aggregated 26), but fewer nodes are expanded: I1 individual UCS 1,273 (61 aggregated); I2 individual A*+hprec 50,146 (was 60,805); I2 aggregated UCS 3,252; I3 aggregated UCS 88,689 in 1.8 s (was 157k, 3.5 s). **The node counts and times quoted in sections 1–4 and 9.1–9.6 were measured before this change and are outdated** (the optimal costs are still valid). E1–E3 (Eloísa) will produce the new ones. E4 (section 4b) was re-run with the new rule.
 2. **Cross-zone lines are silently ignored** in `energizar_corta/larga`. `validar(red)` will catch it on the instance side.
 3. ~~`instancias.cargar` defaults to `agregada=True`, but the aggregated version doesn't exist yet, so `python main.py` without `--individual` crashes.~~ **Solved in step 4:** `cargar` now uses `dominio_agregado.py`. The `problema_agregado` stub in `dominio.py` remains (Eloísa can delete it or point it to the new file).
 4. README says the delete field is `del`. In the code it's `dele` (`del` is a reserved Python word).
@@ -509,7 +538,7 @@ After each part: run it, report the real output, and stop for your review if you
 1. **Files:** mine = `instancias.py`, `planificador.py`, `replanificacion.py`, `visualizacion.py`, the aggregated version, and experiment **E4** in `experimentos.py` (its header says E4 is yours). `programacion.py` (optional) and `main.py` are not in scope. Correct? → ✅ **Answered: experiments E1–E3, E5, E6 are Eloísa's. E4 was then implemented by Milagros** (after step 5 showed I1–I3 can't recover from failures). Only `e4()` and its `_e4_*` helpers/`E4_*` constants were added to `experimentos.py`; Eloísa's stubs are untouched. Tell Eloísa she doesn't need to write E4.
 2. ✅ **Aggregated version location:** new file `dominio_agregado.py` (decided).
 3. ✅ Instance functions keep returning a `Red`; `cargar` builds the problem (went ahead with the default).
-4. ✅ **DisparoCentral semantics (answered "OK to all"):** (A) the plant's blocks disappear (`Activado`/`Libre` deleted); (B) loads using them lose supply and count as lost loads; (C) if the tripped plant is thermal, its borrowed auxiliary block is given back (`Libre`); (D) **no cascade**: a thermal started with a block of the tripped plant keeps running (the auxiliary block is only needed to start); (E) substations keep `ConTension` (and `Cargada`, same quirk as `Deslastrar`).
+4. ✅ **DisparoCentral semantics (answered "OK to all"):** (A) the plant's blocks disappear (`Activado`/`Libre` deleted); (B) loads using them lose supply and count as lost loads; (C) if the tripped plant is thermal, its borrowed auxiliary block is given back (`Libre`); (D) **no cascade**: a thermal started with a block of the tripped plant keeps running (the auxiliary block is only needed to start); (E) substations keep `ConTension` (`Cargada` no longer exists since 2026-10-12).
 5. ✅ No longer needed: the aggregated version exists, so `cargar`'s default `agregada=True` works.
 6. ✅ "Same fixes" read as **same rules**: the aggregated version copies every rule of the individual one exactly, including its quirks (section 7).
 
@@ -579,4 +608,12 @@ Points worth a slide or a prepared answer. Added as they come up during implemen
 - **Honest limitation, say it before they ask:** extra maneuvers are almost always 0, so they don't show the difference. The reasons are that recovered failures are often free (twin cable, same-price spare plant), that the costly failures end up unsolvable and drop out of the average (selection bias), and that a cable breaking after use changes nothing. The comparison also favors cables: each cable has its own twin, while four plants share one spare.
 - **Why a hydro plant trip is always fatal:** each zone has only one plant that can start from zero. Without it the zone can't produce its first block, and every other plant needs a block to start.
 - **Paired design:** the same seeds are used for both failure types, so failures happen at the same steps and only the *type* changes.
+
+### 9.9 Visualisation (step 6)
+- **What the frames show:** one image per step of the plan, and power "spreading" across the grid. Grey substations turn yellow, plants switch to "en marcha", customers get a ✓. Good for explaining I1's 14 steps on one slide sequence.
+- **Why the layout is fixed:** if nodes moved between frames, the eye would follow the movement instead of the change of colour. Positions are computed once (seeded) and reused.
+- **Why the titles name blocks (`bT1_2`) if the drawing doesn't show them:** the frames draw the individual version's plan, whose step names say which block is used ("block 2 of T1"); the aggregated version would only show counters. Same plan cost (14), same picture.
+- **Why the blocks aren't drawn:** the drawing only uses facts that exist in both versions (individual and aggregated), so one function serves both. Blocks are "bookkeeping" of energy, not a place on the map. Consequence: an `ActivarBloque` step only changes the title.
+- **Reading a long line in the pictures:** the dashed line S1–S2 in I1 can only be switched on once a customer at S1 is supplied (step 5, after hospital P1). That's the Ferranti rule, visible in the picture.
+- **Citations:** NetworkX (Hagberg, Schult & Swart, 2008), Matplotlib (Hunter, 2007).
 

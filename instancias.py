@@ -278,11 +278,11 @@ def red_i2_reserva():
           T1 o T2 (arrancar + 2 activaciones para ganar 1 bloque neto), así
           que sin fallos no compensa usarla y el óptimo sigue siendo 23.
         - En S6 (detrás de la línea larga) la búsqueda crece menos que en
-          S2, S3 o S5: 166 k nodos expandidos frente a 308-343 k.
+          S2, S3 o S5.
 
     Oferta: 2 + 2 + 2 + 2 + 2 = 10 bloques; demanda sin fallos: 8 (6 cargas
     + 2 bloques de auxiliares). Coste óptimo: 23, igual que I2 (A* + hprec:
-    unos 166 k nodos expandidos y 4,6 s).
+    unos 148 k nodos expandidos y 3,4 s).
 
     No está en REDES: E1-E3 y la línea de órdenes no cambian.
 

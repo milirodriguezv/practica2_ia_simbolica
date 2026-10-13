@@ -1,102 +1,102 @@
 instancia,tipo_fallo,prob_fallo,semilla,resuelto,motivo,coste,coste_plan_original,maniobras_extra,cargas_perdidas,replanificaciones,tiempo_replanificacion,n_eventos,eventos
 I2,linea,0.05,0,True,resuelto,23,23,0,0,0,0.0,0,
-I2,linea,0.05,1,False,sin_solucion,9,23,,0,1,0.041,1,paso 9: avería de la línea L46
+I2,linea,0.05,1,False,sin_solucion,9,23,,0,1,0.022,1,paso 9: avería de la línea L46
 I2,linea,0.05,2,True,resuelto,23,23,0,0,0,0.0,1,paso 20: avería de la línea L12
-I2,linea,0.05,3,False,sin_solucion,6,23,,0,1,0.044,1,paso 6: avería de la línea L46
+I2,linea,0.05,3,False,sin_solucion,6,23,,0,1,0.025,1,paso 6: avería de la línea L46
 I2,linea,0.05,4,True,resuelto,23,23,0,0,0,0.0,0,
-I2,linea,0.05,5,False,sin_solucion,6,23,,0,1,0.046,1,paso 6: avería de la línea L46
-I2,linea,0.05,6,False,sin_solucion,4,23,,0,1,0.054,1,paso 4: avería de la línea L46
-I2,linea,0.05,7,False,sin_solucion,8,23,,0,1,0.044,1,paso 8: avería de la línea L46
+I2,linea,0.05,5,False,sin_solucion,6,23,,0,1,0.025,1,paso 6: avería de la línea L46
+I2,linea,0.05,6,False,sin_solucion,4,23,,0,1,0.031,1,paso 4: avería de la línea L46
+I2,linea,0.05,7,False,sin_solucion,8,23,,0,1,0.023,1,paso 8: avería de la línea L46
 I2,linea,0.05,8,True,resuelto,23,23,0,0,0,0.0,1,paso 16: avería de la línea L45
-I2,linea,0.05,9,False,sin_solucion,4,23,,0,1,0.056,1,paso 4: avería de la línea L46
+I2,linea,0.05,9,False,sin_solucion,4,23,,0,1,0.03,1,paso 4: avería de la línea L46
 I2,linea,0.05,10,True,resuelto,23,23,0,0,0,0.0,1,paso 13: avería de la línea L23
 I2,linea,0.05,11,False,sin_solucion,15,23,,0,1,0.001,1,paso 15: avería de la línea L46
-I2,linea,0.05,12,False,sin_solucion,4,23,,0,1,0.008,1,paso 4: avería de la línea L45
+I2,linea,0.05,12,False,sin_solucion,4,23,,0,1,0.006,1,paso 4: avería de la línea L45
 I2,linea,0.05,13,True,resuelto,23,23,0,0,0,0.0,1,paso 16: avería de la línea L45
 I2,linea,0.05,14,True,resuelto,23,23,0,0,0,0.0,0,
 I2,linea,0.1,0,True,resuelto,23,23,0,0,0,0.0,0,
 I2,linea,0.1,1,True,resuelto,23,23,0,0,0,0.0,2,paso 8: avería de la línea L12 | paso 19: avería de la línea L46
-I2,linea,0.1,2,False,sin_solucion,2,23,,0,1,0.007,1,paso 2: avería de la línea L12
+I2,linea,0.1,2,False,sin_solucion,2,23,,0,1,0.005,1,paso 2: avería de la línea L12
 I2,linea,0.1,3,False,sin_solucion,5,23,,0,1,0.001,1,paso 5: avería de la línea L12
-I2,linea,0.1,4,False,sin_solucion,4,23,,0,1,0.057,1,paso 4: avería de la línea L46
-I2,linea,0.1,5,False,sin_solucion,6,23,,0,1,0.045,1,paso 6: avería de la línea L46
-I2,linea,0.1,6,False,sin_solucion,4,23,,0,1,0.054,1,paso 4: avería de la línea L46
-I2,linea,0.1,7,False,sin_solucion,3,23,,0,1,0.003,1,paso 3: avería de la línea L12
-I2,linea,0.1,8,False,sin_solucion,4,23,,0,1,0.012,1,paso 4: avería de la línea L23
-I2,linea,0.1,9,False,sin_solucion,4,23,,0,1,0.055,1,paso 4: avería de la línea L46
+I2,linea,0.1,4,False,sin_solucion,4,23,,0,1,0.031,1,paso 4: avería de la línea L46
+I2,linea,0.1,5,False,sin_solucion,6,23,,0,1,0.025,1,paso 6: avería de la línea L46
+I2,linea,0.1,6,False,sin_solucion,4,23,,0,1,0.032,1,paso 4: avería de la línea L46
+I2,linea,0.1,7,False,sin_solucion,3,23,,0,1,0.002,1,paso 3: avería de la línea L12
+I2,linea,0.1,8,False,sin_solucion,4,23,,0,1,0.009,1,paso 4: avería de la línea L23
+I2,linea,0.1,9,False,sin_solucion,4,23,,0,1,0.031,1,paso 4: avería de la línea L46
 I2,linea,0.1,10,True,resuelto,23,23,0,0,0,0.0,1,paso 13: avería de la línea L23
 I2,linea,0.1,11,True,resuelto,23,23,0,0,0,0.0,2,paso 10: avería de la línea L45 | paso 22: avería de la línea L12
-I2,linea,0.1,12,False,sin_solucion,4,23,,0,1,0.008,1,paso 4: avería de la línea L45
+I2,linea,0.1,12,False,sin_solucion,4,23,,0,1,0.006,1,paso 4: avería de la línea L45
 I2,linea,0.1,13,True,resuelto,23,23,0,0,0,0.0,2,paso 16: avería de la línea L45 | paso 18: avería de la línea L23
 I2,linea,0.1,14,True,resuelto,23,23,0,0,0,0.0,0,
 I2,linea,0.2,0,True,resuelto,23,23,0,0,0,0.0,0,
-I2,linea,0.2,1,False,sin_solucion,0,23,,0,1,0.013,1,paso 0: avería de la línea L12
-I2,linea,0.2,2,False,sin_solucion,2,23,,0,1,0.007,1,paso 2: avería de la línea L12
+I2,linea,0.2,1,False,sin_solucion,0,23,,0,1,0.01,1,paso 0: avería de la línea L12
+I2,linea,0.2,2,False,sin_solucion,2,23,,0,1,0.006,1,paso 2: avería de la línea L12
 I2,linea,0.2,3,False,sin_solucion,5,23,,0,1,0.001,1,paso 5: avería de la línea L12
-I2,linea,0.2,4,False,sin_solucion,1,23,,0,1,0.115,1,paso 1: avería de la línea L46
-I2,linea,0.2,5,False,sin_solucion,6,23,,0,1,0.044,1,paso 6: avería de la línea L46
-I2,linea,0.2,6,False,sin_solucion,4,23,,0,1,0.054,1,paso 4: avería de la línea L46
-I2,linea,0.2,7,False,sin_solucion,1,23,,0,1,0.012,1,paso 1: avería de la línea L12
-I2,linea,0.2,8,False,sin_solucion,2,23,,0,1,0.007,1,paso 2: avería de la línea L12
-I2,linea,0.2,9,False,sin_solucion,2,23,,0,1,0.007,1,paso 2: avería de la línea L12
-I2,linea,0.2,10,False,sin_solucion,7,23,,0,1,0.042,1,paso 7: avería de la línea L46
-I2,linea,0.2,11,False,sin_solucion,6,23,,0,1,0.044,1,paso 6: avería de la línea L46
-I2,linea,0.2,12,False,sin_solucion,3,23,,0,1,0.003,1,paso 3: avería de la línea L12
-I2,linea,0.2,13,False,sin_solucion,4,23,,0,1,0.012,1,paso 4: avería de la línea L23
-I2,linea,0.2,14,False,sin_solucion,0,23,,0,1,0.034,1,paso 0: avería de la línea L23
+I2,linea,0.2,4,False,sin_solucion,1,23,,0,1,0.063,1,paso 1: avería de la línea L46
+I2,linea,0.2,5,False,sin_solucion,6,23,,0,1,0.025,1,paso 6: avería de la línea L46
+I2,linea,0.2,6,False,sin_solucion,4,23,,0,1,0.031,1,paso 4: avería de la línea L46
+I2,linea,0.2,7,False,sin_solucion,1,23,,0,1,0.009,1,paso 1: avería de la línea L12
+I2,linea,0.2,8,False,sin_solucion,2,23,,0,1,0.006,1,paso 2: avería de la línea L12
+I2,linea,0.2,9,False,sin_solucion,2,23,,0,1,0.006,1,paso 2: avería de la línea L12
+I2,linea,0.2,10,False,sin_solucion,7,23,,0,1,0.024,1,paso 7: avería de la línea L46
+I2,linea,0.2,11,False,sin_solucion,6,23,,0,1,0.025,1,paso 6: avería de la línea L46
+I2,linea,0.2,12,False,sin_solucion,3,23,,0,1,0.002,1,paso 3: avería de la línea L12
+I2,linea,0.2,13,False,sin_solucion,4,23,,0,1,0.009,1,paso 4: avería de la línea L23
+I2,linea,0.2,14,False,sin_solucion,0,23,,0,1,0.025,1,paso 0: avería de la línea L23
 I2,central,0.05,0,True,resuelto,23,23,0,0,0,0.0,0,
-I2,central,0.05,1,False,sin_solucion,9,23,,0,1,0.089,1,paso 9: disparo de la central T2
+I2,central,0.05,1,False,sin_solucion,9,23,,0,1,0.045,1,paso 9: disparo de la central T2
 I2,central,0.05,2,False,sin_solucion,20,23,,2,1,0.018,1,"paso 20: disparo de la central H1 (pierden suministro: P1, P2)"
-I2,central,0.05,3,False,sin_solucion,6,23,,0,1,0.091,1,paso 6: disparo de la central T2
+I2,central,0.05,3,False,sin_solucion,6,23,,0,1,0.049,1,paso 6: disparo de la central T2
 I2,central,0.05,4,True,resuelto,23,23,0,0,0,0.0,0,
-I2,central,0.05,5,False,sin_solucion,6,23,,0,1,0.094,1,paso 6: disparo de la central T2
-I2,central,0.05,6,False,sin_solucion,4,23,,0,1,0.113,1,paso 4: disparo de la central T2
-I2,central,0.05,7,False,sin_solucion,8,23,,0,1,0.091,1,paso 8: disparo de la central T2
+I2,central,0.05,5,False,sin_solucion,6,23,,0,1,0.049,1,paso 6: disparo de la central T2
+I2,central,0.05,6,False,sin_solucion,4,23,,0,1,0.058,1,paso 4: disparo de la central T2
+I2,central,0.05,7,False,sin_solucion,8,23,,0,1,0.048,1,paso 8: disparo de la central T2
 I2,central,0.05,8,False,sin_solucion,16,23,,1,1,0.003,1,paso 16: disparo de la central T1 (pierden suministro: B2)
-I2,central,0.05,9,False,sin_solucion,4,23,,0,1,0.114,1,paso 4: disparo de la central T2
+I2,central,0.05,9,False,sin_solucion,4,23,,0,1,0.059,1,paso 4: disparo de la central T2
 I2,central,0.05,10,False,sin_solucion,13,23,,1,1,0.0,1,paso 13: disparo de la central H2 (pierden suministro: B1)
 I2,central,0.05,11,False,sin_solucion,15,23,,0,1,0.002,1,paso 15: disparo de la central T2
-I2,central,0.05,12,False,sin_solucion,4,23,,0,1,0.041,1,paso 4: disparo de la central T1
-I2,central,0.05,13,False,sin_solucion,16,23,,1,1,0.004,1,paso 16: disparo de la central T1 (pierden suministro: B2)
+I2,central,0.05,12,False,sin_solucion,4,23,,0,1,0.021,1,paso 4: disparo de la central T1
+I2,central,0.05,13,False,sin_solucion,16,23,,1,1,0.003,1,paso 16: disparo de la central T1 (pierden suministro: B2)
 I2,central,0.05,14,True,resuelto,23,23,0,0,0,0.0,0,
 I2,central,0.1,0,True,resuelto,23,23,0,0,0,0.0,0,
-I2,central,0.1,1,False,sin_solucion,8,23,,1,1,0.002,1,paso 8: disparo de la central H1 (pierden suministro: P1)
+I2,central,0.1,1,False,sin_solucion,8,23,,1,1,0.001,1,paso 8: disparo de la central H1 (pierden suministro: P1)
 I2,central,0.1,2,False,sin_solucion,2,23,,0,1,0.001,1,paso 2: disparo de la central H1
-I2,central,0.1,3,False,sin_solucion,5,23,,1,1,0.004,1,paso 5: disparo de la central H1 (pierden suministro: P1)
-I2,central,0.1,4,False,sin_solucion,4,23,,0,1,0.115,1,paso 4: disparo de la central T2
-I2,central,0.1,5,False,sin_solucion,6,23,,0,1,0.091,1,paso 6: disparo de la central T2
-I2,central,0.1,6,False,sin_solucion,4,23,,0,1,0.117,1,paso 4: disparo de la central T2
-I2,central,0.1,7,False,sin_solucion,3,23,,1,1,0.004,1,paso 3: disparo de la central H1 (pierden suministro: P1)
+I2,central,0.1,3,False,sin_solucion,5,23,,1,1,0.001,1,paso 5: disparo de la central H1 (pierden suministro: P1)
+I2,central,0.1,4,False,sin_solucion,4,23,,0,1,0.058,1,paso 4: disparo de la central T2
+I2,central,0.1,5,False,sin_solucion,6,23,,0,1,0.048,1,paso 6: disparo de la central T2
+I2,central,0.1,6,False,sin_solucion,4,23,,0,1,0.065,1,paso 4: disparo de la central T2
+I2,central,0.1,7,False,sin_solucion,3,23,,1,1,0.001,1,paso 3: disparo de la central H1 (pierden suministro: P1)
 I2,central,0.1,8,False,sin_solucion,4,23,,0,1,0.0,1,paso 4: disparo de la central H2
-I2,central,0.1,9,False,sin_solucion,4,23,,0,1,0.111,1,paso 4: disparo de la central T2
+I2,central,0.1,9,False,sin_solucion,4,23,,0,1,0.057,1,paso 4: disparo de la central T2
 I2,central,0.1,10,False,sin_solucion,13,23,,1,1,0.0,1,paso 13: disparo de la central H2 (pierden suministro: B1)
-I2,central,0.1,11,False,sin_solucion,10,23,,0,1,0.024,1,paso 10: disparo de la central T1
-I2,central,0.1,12,False,sin_solucion,4,23,,0,1,0.05,1,paso 4: disparo de la central T1
-I2,central,0.1,13,False,sin_solucion,16,23,,1,1,0.003,1,paso 16: disparo de la central T1 (pierden suministro: B2)
+I2,central,0.1,11,False,sin_solucion,10,23,,0,1,0.012,1,paso 10: disparo de la central T1
+I2,central,0.1,12,False,sin_solucion,4,23,,0,1,0.021,1,paso 4: disparo de la central T1
+I2,central,0.1,13,False,sin_solucion,16,23,,1,1,0.004,1,paso 16: disparo de la central T1 (pierden suministro: B2)
 I2,central,0.1,14,True,resuelto,23,23,0,0,0,0.0,0,
 I2,central,0.2,0,True,resuelto,23,23,0,0,0,0.0,0,
 I2,central,0.2,1,False,sin_solucion,0,23,,0,1,0.001,1,paso 0: disparo de la central H1
 I2,central,0.2,2,False,sin_solucion,2,23,,0,1,0.001,1,paso 2: disparo de la central H1
-I2,central,0.2,3,False,sin_solucion,5,23,,1,1,0.004,1,paso 5: disparo de la central H1 (pierden suministro: P1)
-I2,central,0.2,4,False,sin_solucion,1,23,,0,1,0.236,1,paso 1: disparo de la central T2
-I2,central,0.2,5,False,sin_solucion,6,23,,0,1,0.095,1,paso 6: disparo de la central T2
-I2,central,0.2,6,False,sin_solucion,4,23,,0,1,0.113,1,paso 4: disparo de la central T2
+I2,central,0.2,3,False,sin_solucion,5,23,,1,1,0.001,1,paso 5: disparo de la central H1 (pierden suministro: P1)
+I2,central,0.2,4,False,sin_solucion,1,23,,0,1,0.12,1,paso 1: disparo de la central T2
+I2,central,0.2,5,False,sin_solucion,6,23,,0,1,0.049,1,paso 6: disparo de la central T2
+I2,central,0.2,6,False,sin_solucion,4,23,,0,1,0.058,1,paso 4: disparo de la central T2
 I2,central,0.2,7,False,sin_solucion,1,23,,0,1,0.001,1,paso 1: disparo de la central H1
 I2,central,0.2,8,False,sin_solucion,2,23,,0,1,0.001,1,paso 2: disparo de la central H1
 I2,central,0.2,9,False,sin_solucion,2,23,,0,1,0.001,1,paso 2: disparo de la central H1
-I2,central,0.2,10,False,sin_solucion,7,23,,0,1,0.091,1,paso 7: disparo de la central T2
-I2,central,0.2,11,False,sin_solucion,6,23,,0,1,0.096,1,paso 6: disparo de la central T2
-I2,central,0.2,12,False,sin_solucion,3,23,,1,1,0.004,1,paso 3: disparo de la central H1 (pierden suministro: P1)
+I2,central,0.2,10,False,sin_solucion,7,23,,0,1,0.053,1,paso 7: disparo de la central T2
+I2,central,0.2,11,False,sin_solucion,6,23,,0,1,0.048,1,paso 6: disparo de la central T2
+I2,central,0.2,12,False,sin_solucion,3,23,,1,1,0.001,1,paso 3: disparo de la central H1 (pierden suministro: P1)
 I2,central,0.2,13,False,sin_solucion,4,23,,0,1,0.0,1,paso 4: disparo de la central H2
-I2,central,0.2,14,False,sin_solucion,0,23,,0,1,0.001,1,paso 0: disparo de la central H2
+I2,central,0.2,14,False,sin_solucion,0,23,,0,1,0.0,1,paso 0: disparo de la central H2
 I2-reserva,linea,0.05,0,True,resuelto,23,23,0,0,0,0.0,0,
-I2-reserva,linea,0.05,1,True,resuelto,23,23,0,0,1,1.45,3,paso 9: avería de la línea L46 | paso 12: avería de la línea L23b | paso 18: avería de la línea L46b
+I2-reserva,linea,0.05,1,True,resuelto,23,23,0,0,1,1.18,3,paso 9: avería de la línea L46 | paso 12: avería de la línea L23b | paso 18: avería de la línea L46b
 I2-reserva,linea,0.05,2,True,resuelto,23,23,0,0,0,0.0,1,paso 20: avería de la línea L12
 I2-reserva,linea,0.05,3,True,resuelto,23,23,0,0,0,0.0,1,paso 6: avería de la línea L46b
 I2-reserva,linea,0.05,4,True,resuelto,23,23,0,0,0,0.0,0,
 I2-reserva,linea,0.05,5,True,resuelto,23,23,0,0,0,0.0,1,paso 6: avería de la línea L46b
 I2-reserva,linea,0.05,6,True,resuelto,23,23,0,0,0,0.0,2,paso 4: avería de la línea L46b | paso 8: avería de la línea L23b
-I2-reserva,linea,0.05,7,True,resuelto,23,23,0,0,1,1.419,3,paso 8: avería de la línea L46 | paso 19: avería de la línea L12b | paso 20: avería de la línea L23
+I2-reserva,linea,0.05,7,True,resuelto,23,23,0,0,1,1.222,3,paso 8: avería de la línea L46 | paso 19: avería de la línea L12b | paso 20: avería de la línea L23
 I2-reserva,linea,0.05,8,True,resuelto,23,23,0,0,0,0.0,1,paso 16: avería de la línea L45
 I2-reserva,linea,0.05,9,True,resuelto,23,23,0,0,0,0.0,2,paso 4: avería de la línea L46b | paso 9: avería de la línea L23b
 I2-reserva,linea,0.05,10,True,resuelto,23,23,0,0,0,0.0,1,paso 13: avería de la línea L23
@@ -106,76 +106,76 @@ I2-reserva,linea,0.05,13,True,resuelto,23,23,0,0,0,0.0,1,paso 16: avería de la 
 I2-reserva,linea,0.05,14,True,resuelto,23,23,0,0,0,0.0,0,
 I2-reserva,linea,0.1,0,True,resuelto,23,23,0,0,0,0.0,0,
 I2-reserva,linea,0.1,1,True,resuelto,23,23,0,0,0,0.0,2,paso 8: avería de la línea L12 | paso 19: avería de la línea L46
-I2-reserva,linea,0.1,2,True,resuelto,23,23,0,0,1,1.378,3,paso 2: avería de la línea L12b | paso 9: avería de la línea L46 | paso 19: avería de la línea L12
-I2-reserva,linea,0.1,3,True,resuelto,23,23,0,0,1,1.821,4,paso 5: avería de la línea L12 | paso 19: avería de la línea L46b | paso 20: avería de la línea L45b | paso 21: avería de la línea L12b
-I2-reserva,linea,0.1,4,True,resuelto,23,23,0,0,1,1.903,2,paso 4: avería de la línea L46 | paso 8: avería de la línea L45
+I2-reserva,linea,0.1,2,True,resuelto,23,23,0,0,1,1.355,3,paso 2: avería de la línea L12b | paso 9: avería de la línea L46 | paso 19: avería de la línea L12
+I2-reserva,linea,0.1,3,True,resuelto,23,23,0,0,1,1.558,4,paso 5: avería de la línea L12 | paso 19: avería de la línea L46b | paso 20: avería de la línea L45b | paso 21: avería de la línea L12b
+I2-reserva,linea,0.1,4,True,resuelto,23,23,0,0,1,1.587,2,paso 4: avería de la línea L46 | paso 8: avería de la línea L45
 I2-reserva,linea,0.1,5,True,resuelto,23,23,0,0,0,0.0,4,paso 6: avería de la línea L46b | paso 9: avería de la línea L12b | paso 15: avería de la línea L23 | paso 21: avería de la línea L46
 I2-reserva,linea,0.1,6,True,resuelto,23,23,0,0,0,0.0,3,paso 4: avería de la línea L46b | paso 8: avería de la línea L23b | paso 22: avería de la línea L45
 I2-reserva,linea,0.1,7,True,resuelto,23,23,0,0,0,0.0,7,paso 3: avería de la línea L12b | paso 5: avería de la línea L45b | paso 7: avería de la línea L45 | paso 8: avería de la línea L12 | paso 10: avería de la línea L23 | paso 14: avería de la línea L46b | paso 17: avería de la línea L23b
 I2-reserva,linea,0.1,8,True,resuelto,23,23,0,0,0,0.0,4,paso 4: avería de la línea L23b | paso 8: avería de la línea L45 | paso 13: avería de la línea L12b | paso 21: avería de la línea L12
-I2-reserva,linea,0.1,9,True,resuelto,23,23,0,0,1,1.495,3,paso 4: avería de la línea L46b | paso 6: avería de la línea L45 | paso 15: avería de la línea L12b
+I2-reserva,linea,0.1,9,True,resuelto,23,23,0,0,1,1.302,3,paso 4: avería de la línea L46b | paso 6: avería de la línea L45 | paso 15: avería de la línea L12b
 I2-reserva,linea,0.1,10,True,resuelto,23,23,0,0,0,0.0,1,paso 13: avería de la línea L23
 I2-reserva,linea,0.1,11,True,resuelto,23,23,0,0,0,0.0,2,paso 10: avería de la línea L45 | paso 22: avería de la línea L12
 I2-reserva,linea,0.1,12,True,resuelto,23,23,0,0,0,0.0,5,paso 4: avería de la línea L45b | paso 10: avería de la línea L45 | paso 15: avería de la línea L12b | paso 16: avería de la línea L23b | paso 19: avería de la línea L12
 I2-reserva,linea,0.1,13,True,resuelto,23,23,0,0,0,0.0,2,paso 16: avería de la línea L45 | paso 18: avería de la línea L46b
 I2-reserva,linea,0.1,14,True,resuelto,23,23,0,0,0,0.0,0,
 I2-reserva,linea,0.2,0,True,resuelto,23,23,0,0,0,0.0,0,
-I2-reserva,linea,0.2,1,False,sin_solucion,6,23,,0,1,0.018,2,paso 0: avería de la línea L12b | paso 6: avería de la línea L12
+I2-reserva,linea,0.2,1,False,sin_solucion,6,23,,0,1,0.014,2,paso 0: avería de la línea L12b | paso 6: avería de la línea L12
 I2-reserva,linea,0.2,2,True,resuelto,23,23,0,0,0,0.0,3,paso 2: avería de la línea L12b | paso 4: avería de la línea L46b | paso 10: avería de la línea L45
-I2-reserva,linea,0.2,3,False,sin_solucion,14,23,,0,3,3.188,3,paso 5: avería de la línea L12 | paso 9: avería de la línea L46 | paso 14: avería de la línea L46b
-I2-reserva,linea,0.2,4,True,resuelto,23,23,0,0,2,5.848,5,paso 1: avería de la línea L46 | paso 3: avería de la línea L12 | paso 11: avería de la línea L12b | paso 14: avería de la línea L45 | paso 16: avería de la línea L45b
+I2-reserva,linea,0.2,3,False,sin_solucion,14,23,,0,3,2.795,3,paso 5: avería de la línea L12 | paso 9: avería de la línea L46 | paso 14: avería de la línea L46b
+I2-reserva,linea,0.2,4,True,resuelto,23,23,0,0,2,5.017,5,paso 1: avería de la línea L46 | paso 3: avería de la línea L12 | paso 11: avería de la línea L12b | paso 14: avería de la línea L45 | paso 16: avería de la línea L45b
 I2-reserva,linea,0.2,5,True,resuelto,23,23,0,0,0,0.0,8,paso 6: avería de la línea L46b | paso 9: avería de la línea L12b | paso 10: avería de la línea L45 | paso 13: avería de la línea L23 | paso 14: avería de la línea L23b | paso 16: avería de la línea L45b | paso 17: avería de la línea L12 | paso 18: avería de la línea L46
 I2-reserva,linea,0.2,6,True,resuelto,23,23,0,0,0,0.0,5,paso 4: avería de la línea L46b | paso 8: avería de la línea L23b | paso 14: avería de la línea L45b | paso 19: avería de la línea L45 | paso 21: avería de la línea L46
-I2-reserva,linea,0.2,7,False,sin_solucion,4,23,,0,3,5.959,4,paso 1: avería de la línea L12 | paso 2: avería de la línea L45b | paso 3: avería de la línea L46 | paso 4: avería de la línea L46b
-I2-reserva,linea,0.2,8,True,resuelto,23,23,0,0,3,7.112,7,paso 2: avería de la línea L12 | paso 3: avería de la línea L23 | paso 7: avería de la línea L45b | paso 10: avería de la línea L46 | paso 11: avería de la línea L23b | paso 19: avería de la línea L12b | paso 22: avería de la línea L45
-I2-reserva,linea,0.2,9,False,sin_solucion,17,23,,0,2,4.031,5,paso 2: avería de la línea L12 | paso 10: avería de la línea L45 | paso 13: avería de la línea L12b | paso 14: avería de la línea L46b | paso 17: avería de la línea L46
+I2-reserva,linea,0.2,7,False,sin_solucion,4,23,,0,3,4.969,4,paso 1: avería de la línea L12 | paso 2: avería de la línea L45b | paso 3: avería de la línea L46 | paso 4: avería de la línea L46b
+I2-reserva,linea,0.2,8,True,resuelto,23,23,0,0,3,5.91,7,paso 2: avería de la línea L12 | paso 3: avería de la línea L23 | paso 7: avería de la línea L45b | paso 10: avería de la línea L46 | paso 11: avería de la línea L23b | paso 19: avería de la línea L12b | paso 22: avería de la línea L45
+I2-reserva,linea,0.2,9,False,sin_solucion,17,23,,0,2,3.443,5,paso 2: avería de la línea L12 | paso 10: avería de la línea L45 | paso 13: avería de la línea L12b | paso 14: avería de la línea L46b | paso 17: avería de la línea L46
 I2-reserva,linea,0.2,10,False,sin_solucion,12,23,,0,1,0.003,2,paso 7: avería de la línea L46b | paso 12: avería de la línea L46
 I2-reserva,linea,0.2,11,True,resuelto,23,23,0,0,0,0.0,7,paso 6: avería de la línea L46b | paso 9: avería de la línea L23 | paso 10: avería de la línea L45b | paso 13: avería de la línea L45 | paso 17: avería de la línea L12 | paso 19: avería de la línea L12b | paso 20: avería de la línea L23b
-I2-reserva,linea,0.2,12,True,resuelto,23,23,0,0,1,1.875,5,paso 3: avería de la línea L12 | paso 10: avería de la línea L45b | paso 11: avería de la línea L45 | paso 16: avería de la línea L46b | paso 21: avería de la línea L12b
+I2-reserva,linea,0.2,12,True,resuelto,23,23,0,0,1,1.587,5,paso 3: avería de la línea L12 | paso 10: avería de la línea L45b | paso 11: avería de la línea L45 | paso 16: avería de la línea L46b | paso 21: avería de la línea L12b
 I2-reserva,linea,0.2,13,True,resuelto,23,23,0,0,0,0.0,4,paso 4: avería de la línea L23b | paso 8: avería de la línea L12 | paso 15: avería de la línea L45 | paso 17: avería de la línea L45b
 I2-reserva,linea,0.2,14,True,resuelto,23,23,0,0,0,0.0,6,paso 0: avería de la línea L23b | paso 9: avería de la línea L12b | paso 16: avería de la línea L46b | paso 18: avería de la línea L12 | paso 19: avería de la línea L45b | paso 20: avería de la línea L45
 I2-reserva,central,0.05,0,True,resuelto,23,23,0,0,0,0.0,0,
-I2-reserva,central,0.05,1,False,sin_solucion,12,23,,0,2,0.512,2,paso 9: disparo de la central T2 | paso 12: disparo de la central T3
-I2-reserva,central,0.05,2,False,sin_solucion,20,23,,2,1,0.672,1,"paso 20: disparo de la central H1 (pierden suministro: P1, P2)"
-I2-reserva,central,0.05,3,True,resuelto,23,23,0,0,1,0.52,1,paso 6: disparo de la central T2
+I2-reserva,central,0.05,1,False,sin_solucion,12,23,,0,2,0.408,2,paso 9: disparo de la central T2 | paso 12: disparo de la central T3
+I2-reserva,central,0.05,2,False,sin_solucion,20,23,,2,1,0.678,1,"paso 20: disparo de la central H1 (pierden suministro: P1, P2)"
+I2-reserva,central,0.05,3,True,resuelto,23,23,0,0,1,0.485,1,paso 6: disparo de la central T2
 I2-reserva,central,0.05,4,True,resuelto,23,23,0,0,0,0.0,0,
-I2-reserva,central,0.05,5,True,resuelto,23,23,0,0,1,0.506,1,paso 6: disparo de la central T2
+I2-reserva,central,0.05,5,True,resuelto,23,23,0,0,1,0.42,1,paso 6: disparo de la central T2
 I2-reserva,central,0.05,6,True,resuelto,23,23,0,0,0,0.0,1,paso 4: disparo de la central T3
-I2-reserva,central,0.05,7,False,sin_solucion,19,23,,1,2,0.507,2,paso 8: disparo de la central T2 | paso 19: disparo de la central H2 (pierden suministro: B1)
+I2-reserva,central,0.05,7,False,sin_solucion,19,23,,1,2,0.411,2,paso 8: disparo de la central T2 | paso 19: disparo de la central H2 (pierden suministro: B1)
 I2-reserva,central,0.05,8,True,resuelto,26,23,3,1,1,0.014,1,paso 16: disparo de la central T1 (pierden suministro: B2)
 I2-reserva,central,0.05,9,True,resuelto,23,23,0,0,0,0.0,1,paso 4: disparo de la central T3
 I2-reserva,central,0.05,10,False,sin_solucion,13,23,,1,1,0.0,1,paso 13: disparo de la central H2 (pierden suministro: B1)
-I2-reserva,central,0.05,11,False,sin_solucion,20,23,,2,2,0.027,2,"paso 15: disparo de la central T2 | paso 20: disparo de la central H1 (pierden suministro: P1, P2)"
-I2-reserva,central,0.05,12,False,sin_solucion,10,23,,0,2,0.461,2,paso 4: disparo de la central T1 | paso 10: disparo de la central H2
-I2-reserva,central,0.05,13,True,resuelto,26,23,3,1,1,0.014,1,paso 16: disparo de la central T1 (pierden suministro: B2)
+I2-reserva,central,0.05,11,False,sin_solucion,20,23,,2,2,0.026,2,"paso 15: disparo de la central T2 | paso 20: disparo de la central H1 (pierden suministro: P1, P2)"
+I2-reserva,central,0.05,12,False,sin_solucion,10,23,,0,2,0.39,2,paso 4: disparo de la central T1 | paso 10: disparo de la central H2
+I2-reserva,central,0.05,13,True,resuelto,26,23,3,1,1,0.013,1,paso 16: disparo de la central T1 (pierden suministro: B2)
 I2-reserva,central,0.05,14,True,resuelto,23,23,0,0,0,0.0,0,
 I2-reserva,central,0.1,0,True,resuelto,23,23,0,0,0,0.0,0,
-I2-reserva,central,0.1,1,False,sin_solucion,8,23,,1,1,0.034,1,paso 8: disparo de la central H1 (pierden suministro: P1)
-I2-reserva,central,0.1,2,False,sin_solucion,2,23,,0,1,0.017,1,paso 2: disparo de la central H1
-I2-reserva,central,0.1,3,False,sin_solucion,5,23,,1,1,0.061,1,paso 5: disparo de la central H1 (pierden suministro: P1)
-I2-reserva,central,0.1,4,False,sin_solucion,8,23,,0,2,0.641,2,paso 4: disparo de la central T2 | paso 8: disparo de la central T1
-I2-reserva,central,0.1,5,False,sin_solucion,9,23,,0,2,0.507,2,paso 6: disparo de la central T2 | paso 9: disparo de la central H2
+I2-reserva,central,0.1,1,False,sin_solucion,8,23,,1,1,0.025,1,paso 8: disparo de la central H1 (pierden suministro: P1)
+I2-reserva,central,0.1,2,False,sin_solucion,2,23,,0,1,0.014,1,paso 2: disparo de la central H1
+I2-reserva,central,0.1,3,False,sin_solucion,5,23,,1,1,0.015,1,paso 5: disparo de la central H1 (pierden suministro: P1)
+I2-reserva,central,0.1,4,False,sin_solucion,8,23,,0,2,0.497,2,paso 4: disparo de la central T2 | paso 8: disparo de la central T1
+I2-reserva,central,0.1,5,False,sin_solucion,9,23,,0,2,0.409,2,paso 6: disparo de la central T2 | paso 9: disparo de la central H2
 I2-reserva,central,0.1,6,True,resuelto,23,23,0,0,0,0.0,1,paso 4: disparo de la central T3
-I2-reserva,central,0.1,7,False,sin_solucion,4,23,,1,1,0.006,2,paso 3: disparo de la central T3 | paso 4: disparo de la central H1 (pierden suministro: P1)
-I2-reserva,central,0.1,8,False,sin_solucion,4,23,,0,1,0.001,1,paso 4: disparo de la central H2
-I2-reserva,central,0.1,9,False,sin_solucion,16,23,,1,1,0.005,2,paso 4: disparo de la central T3 | paso 16: disparo de la central H2 (pierden suministro: B1)
+I2-reserva,central,0.1,7,False,sin_solucion,4,23,,1,1,0.001,2,paso 3: disparo de la central T3 | paso 4: disparo de la central H1 (pierden suministro: P1)
+I2-reserva,central,0.1,8,False,sin_solucion,4,23,,0,1,0.0,1,paso 4: disparo de la central H2
+I2-reserva,central,0.1,9,False,sin_solucion,16,23,,1,1,0.007,2,paso 4: disparo de la central T3 | paso 16: disparo de la central H2 (pierden suministro: B1)
 I2-reserva,central,0.1,10,False,sin_solucion,13,23,,1,1,0.0,1,paso 13: disparo de la central H2 (pierden suministro: B1)
-I2-reserva,central,0.1,11,False,sin_solucion,22,23,,2,2,0.292,2,"paso 10: disparo de la central T1 | paso 22: disparo de la central H1 (pierden suministro: P1, P2)"
-I2-reserva,central,0.1,12,False,sin_solucion,10,23,,0,2,0.481,2,paso 4: disparo de la central T1 | paso 10: disparo de la central H2
+I2-reserva,central,0.1,11,False,sin_solucion,22,23,,2,2,0.239,2,"paso 10: disparo de la central T1 | paso 22: disparo de la central H1 (pierden suministro: P1, P2)"
+I2-reserva,central,0.1,12,False,sin_solucion,10,23,,0,2,0.379,2,paso 4: disparo de la central T1 | paso 10: disparo de la central H2
 I2-reserva,central,0.1,13,False,sin_solucion,18,23,,1,2,0.018,2,paso 16: disparo de la central T1 (pierden suministro: B2) | paso 18: disparo de la central T2
 I2-reserva,central,0.1,14,True,resuelto,23,23,0,0,0,0.0,0,
 I2-reserva,central,0.2,0,True,resuelto,23,23,0,0,0,0.0,0,
-I2-reserva,central,0.2,1,False,sin_solucion,0,23,,0,1,0.018,1,paso 0: disparo de la central H1
-I2-reserva,central,0.2,2,False,sin_solucion,2,23,,0,1,0.017,1,paso 2: disparo de la central H1
-I2-reserva,central,0.2,3,False,sin_solucion,5,23,,1,1,0.061,1,paso 5: disparo de la central H1 (pierden suministro: P1)
-I2-reserva,central,0.2,4,False,sin_solucion,3,23,,1,2,1.263,2,paso 1: disparo de la central T2 | paso 3: disparo de la central H1 (pierden suministro: P1)
-I2-reserva,central,0.2,5,False,sin_solucion,9,23,,0,2,0.515,2,paso 6: disparo de la central T2 | paso 9: disparo de la central H2
-I2-reserva,central,0.2,6,False,sin_solucion,15,23,,0,1,0.006,2,paso 4: disparo de la central T3 | paso 15: disparo de la central T1
-I2-reserva,central,0.2,7,False,sin_solucion,1,23,,0,1,0.017,1,paso 1: disparo de la central H1
-I2-reserva,central,0.2,8,False,sin_solucion,2,23,,0,1,0.017,1,paso 2: disparo de la central H1
-I2-reserva,central,0.2,9,False,sin_solucion,2,23,,0,1,0.017,1,paso 2: disparo de la central H1
-I2-reserva,central,0.2,10,False,sin_solucion,9,23,,0,1,0.036,2,paso 7: disparo de la central T3 | paso 9: disparo de la central T1
-I2-reserva,central,0.2,11,False,sin_solucion,9,23,,0,1,0.107,2,paso 6: disparo de la central T3 | paso 9: disparo de la central T2
-I2-reserva,central,0.2,12,False,sin_solucion,3,23,,1,1,0.06,1,paso 3: disparo de la central H1 (pierden suministro: P1)
+I2-reserva,central,0.2,1,False,sin_solucion,0,23,,0,1,0.014,1,paso 0: disparo de la central H1
+I2-reserva,central,0.2,2,False,sin_solucion,2,23,,0,1,0.014,1,paso 2: disparo de la central H1
+I2-reserva,central,0.2,3,False,sin_solucion,5,23,,1,1,0.014,1,paso 5: disparo de la central H1 (pierden suministro: P1)
+I2-reserva,central,0.2,4,False,sin_solucion,3,23,,1,2,0.975,2,paso 1: disparo de la central T2 | paso 3: disparo de la central H1 (pierden suministro: P1)
+I2-reserva,central,0.2,5,False,sin_solucion,9,23,,0,2,0.418,2,paso 6: disparo de la central T2 | paso 9: disparo de la central H2
+I2-reserva,central,0.2,6,False,sin_solucion,15,23,,0,1,0.004,2,paso 4: disparo de la central T3 | paso 15: disparo de la central T1
+I2-reserva,central,0.2,7,False,sin_solucion,1,23,,0,1,0.014,1,paso 1: disparo de la central H1
+I2-reserva,central,0.2,8,False,sin_solucion,2,23,,0,1,0.014,1,paso 2: disparo de la central H1
+I2-reserva,central,0.2,9,False,sin_solucion,2,23,,0,1,0.014,1,paso 2: disparo de la central H1
+I2-reserva,central,0.2,10,False,sin_solucion,9,23,,0,1,0.018,2,paso 7: disparo de la central T3 | paso 9: disparo de la central T1
+I2-reserva,central,0.2,11,False,sin_solucion,9,23,,0,1,0.056,2,paso 6: disparo de la central T3 | paso 9: disparo de la central T2
+I2-reserva,central,0.2,12,False,sin_solucion,3,23,,1,1,0.014,1,paso 3: disparo de la central H1 (pierden suministro: P1)
 I2-reserva,central,0.2,13,False,sin_solucion,4,23,,0,1,0.001,1,paso 4: disparo de la central H2
-I2-reserva,central,0.2,14,False,sin_solucion,10,23,,0,1,0.004,2,paso 0: disparo de la central T3 | paso 10: disparo de la central H2
+I2-reserva,central,0.2,14,False,sin_solucion,10,23,,0,1,0.002,2,paso 0: disparo de la central T3 | paso 10: disparo de la central H2
