@@ -1,8 +1,11 @@
 # Implementation plan: Milagros's parts
 
-For review only. Nothing here is implemented yet. Each part lists **what** gets built, the **design decisions** (with a one-line "why" you can use in the oral defense), and **how it will be verified** by running it.
+**Status (2026-10-13): all of Milagros's parts are implemented, verified and on `main`** (planner, instances + `validar` + G(n), aggregated version, replanning, experiment E4, visualisation). Each part lists **what** was built, the **design decisions** (with a one-line "why" for the oral defense), and the **real measured results**.
 
-Open questions that need your answer before starting are collected in [section 8](#8-questions-to-confirm-before-implementing).
+How to use this file for the presentation:
+- **[Section 10](#10-presentation-kit)** is the presentation kit: suggested slide outline, numbers cheat sheet, likely questions with answers, glossary, live-demo commands and the list of figures.
+- **[Section 9](#9-notes-for-the-presentation--oral-defense)** has the detailed notes per step.
+- Sections 0–5 are the technical record (what, why, measured numbers). Section 8 records the decisions taken with Eloísa/Milagros.
 
 ---
 
@@ -13,7 +16,7 @@ Think of it as a game with these pieces:
 | Piece | Plain meaning | Atoms that describe it |
 |---|---|---|
 | Substation `S` | A node of the grid. It either has voltage ("is lit") or not. | `ConTension(S)` |
-| Line `L` | A cable between two substations of the same zone. A *larga* (long) one can only be lit from a side that already feeds a load. Otherwise the cable "over-voltages" (Ferranti effect). | `Operativa(L)` |
+| Line `L` | A cable between two substations of the same zone. A *larga* (long) one can only be lit from a side where a load is **currently supplied**. Otherwise the cable "over-voltages" (Ferranti effect). | `Operativa(L)` |
 | Plant `C` | Produces energy. *autonomo* starts alone. *termica* needs voltage at its substation **and** one free block from another plant (to power its own machinery, its "auxiliaries"). | `Operativa(C)`, `EnMarcha(C)` |
 | Block `b` | One unit of energy from a plant. It must be **activated**, then it is **free** until a load (or a thermal start) uses it. | `Activado(b)`, `Libre(b)`, `Usa(k,b)`, `Auxiliar(b,C)` |
 | Load `k` | A consumer. Each uses exactly one block. *prioritaria* = hospital. A normal load needs the hospitals of its substation connected first. | `Suministrada(k)` |
@@ -24,7 +27,7 @@ Think of it as a game with these pieces:
 **Cost:** every maneuver costs 1, except `ExtenderAlcance` (cost 0). It's a bookkeeping step: "if A reaches B and B reaches C, then A reaches C".
 
 **Worked example, I1 (already in `instancias.py`), optimal cost 14:**
-`ArrancarAutonomo(H1)` (1) → activate 2 blocks of H1 (2) → connect hospital P1 (1, so now S1 "feeds a load") → `EnergizarLarga S1→S2` (1) → `ArrancarTermica(T1)` with H1's 2nd block (1) → activate 4 blocks of T1 (4) → connect B1, B2, I1, I2 (4). Total: 1+2+1+1+1+4+4 = **14**. Supply 6 blocks = demand 5 loads + 1 auxiliary block. It's exactly enough. This is the first number the planner must reproduce.
+`ArrancarAutonomo(H1)` (1) → activate 2 blocks of H1 (2) → connect hospital P1 (1, so now S1 "feeds a load") → `EnergizarLarga(L12,S1,S2,N,P1)` (1; the action names the supplied load that allows it) → `ArrancarTermica(T1)` with H1's 2nd block (1) → activate 4 blocks of T1 (4) → connect B1, B2, I1, I2 (4). Total: 1+2+1+1+1+4+4 = **14**. Supply 6 blocks = demand 5 loads + 1 auxiliary block. It's exactly enough. This is the first number the planner must reproduce.
 
 ---
 
@@ -73,17 +76,18 @@ Finding applicable actions scans **all** actions at every expansion. That is sim
 - Expanded nodes should decrease h0 → hprec → hmax (better-informed heuristics expand less). I'll report the real numbers.
 - A deliberately broken plan (an action removed) must give `valido = False`.
 
-### ✅ Done: real results on I1 (individual version, with the h tie-break)
+### ✅ Done: real results on I1 (individual version, 68 actions, with the h tie-break)
 | Mode + h | Cost | Expanded | Generated | Time | `validar_plan` |
 |---|---|---|---|---|---|
-| ucs + h0 | 14 | 1511 | 8141 | 0.014 s | (True, 14) |
-| astar + h0 | 14 | 1511 | 8141 | 0.014 s | (True, 14) |
-| astar + hprec | 14 | 936 | 4737 | 0.008 s | (True, 14) |
-| astar + hmax | 14 | 1040 | 6113 | 0.123 s | (True, 14) |
-| astar + hadd | 14 | 287 | 1605 | 0.047 s | (True, 14) |
-| voraz + hadd | 14 | 39 | 169 | 0.009 s | (True, 14) |
+| ucs + h0 | 14 | 1,273 | 6,579 | 0.01 s | (True, 14) |
+| astar + h0 | 14 | 1,273 | 6,579 | 0.01 s | (True, 14) |
+| astar + hprec | 14 | 904 | 4,599 | 0.01 s | (True, 14) |
+| astar + hmax | 14 | 890 | 5,047 | 0.10 s | (True, 14) |
+| astar + hadd | 14 | 281 | 1,595 | 0.04 s | (True, 14) |
+| voraz + hadd | 14 | 36 | 164 | 0.01 s | (True, 14) |
+| voraz + hprec | 14 | 27 | 88 | 0.00 s | (True, 14) |
 
-Before the tie-break change (FIFO only), A* expanded h0 1511 / hprec 1389 / hmax 1511 / hadd 1347. Removing any action from the plan gives `valido = False`; `limite_nodos=5` returns `None` with `"limite_nodos"`.
+With FIFO-only ties (no h tie-break; measured with a scratch copy of the planner), A* expands **1,273 nodes with every heuristic** (h0, hprec, hmax and hadd), the same as UCS. Removing any action from the plan gives `valido = False`; `limite_nodos=5` returns `None` with `"limite_nodos"`.
 
 ---
 
@@ -119,16 +123,17 @@ Keep as is. Verify `validar(red_i1()) == []`.
 Interconnection: (S3, S5). Demand: 6 loads + 2 thermals = 8; supply 2+2+2+2 = 8. By zone, N has 1 spare block (4 for 3) and S is 1 short (4 for 5), so the plan **must couple N and S and pass a block from N to S**.
 Why this shape: each zone has one long line (tests the overvoltage rule), one thermal (tests the auxiliary block), hospitals in both zones, and coupling is in the goal.
 
-**Why it was resized (decision after step 2 review, option 1).** The first version (thermals with 3 blocks, plus industries I1 in S2 and I2 in S6: 10 blocks, 189 actions) could not be solved optimally with individual blocks: UCS hit the 120 s limit after 1.1M expansions, and A* with hprec/hmax/hadd hit it too (A*+hprec with 500 s filled the 8 GB of RAM). Only greedy+hadd solved it (cost 27, which equals the counting lower bound, so it is optimal). Shrinking it gives three instances of increasing difficulty: I1 trivial, **I2 medium (every heuristic reaches the optimum, so E1 compares them fairly)**, I3 hard (shows the explosion the aggregated version solves).
+**Why it was resized (decision after step 2 review, option 1; historical numbers, old `Cargada` rule).** The first version (thermals with 3 blocks, plus industries I1 in S2 and I2 in S6: 10 blocks, 189 actions) could not be solved optimally with individual blocks: UCS hit the 120 s limit after 1.1M expansions, and A* with hprec/hmax/hadd hit it too (A*+hprec with 500 s filled the 8 GB of RAM). Only greedy+hadd solved it (cost 27, which equals the counting lower bound, so it is optimal). Shrinking it gives three instances of increasing difficulty: I1 trivial, **I2 medium (every heuristic reaches the optimum, so E1 compares them fairly)**, I3 hard (shows the explosion the aggregated version solves).
 
-**Real results (individual version, 118 actions, limit 120 s):**
+**Real results (individual version, 117 actions, limit 120 s):**
 | Mode + h | Cost | Expanded | Generated | Time | `validar_plan` |
 |---|---|---|---|---|---|
-| ucs + h0 | 23 | 108,456 | 552,926 | 1.95 s | (True, 23) |
-| astar + hprec | 23 | 60,805 | 287,608 | 1.0 s | (True, 23) |
-| astar + hmax | 23 | 74,589 | 417,416 | 19.1 s | (True, 23) |
-| astar + hadd | 23 | 32,432 | 177,178 | 11.9 s | (True, 23) |
-| voraz + hadd | 23 | 211 | 1,052 | 0.1 s | (True, 23) |
+| ucs + h0 | 23 | 68,061 | 318,128 | 1.05 s | (True, 23) |
+| astar + hprec | 23 | 50,146 | 232,955 | 0.78 s | (True, 23) |
+| astar + hmax | 23 | 50,350 | 260,611 | 11.6 s | (True, 23) |
+| astar + hadd | 23 | 27,486 | 146,768 | 8.2 s | (True, 23) |
+| voraz + hadd | 23 | 161 | 754 | 0.07 s | (True, 23) |
+| voraz + hprec | **25** | 149 | 516 | 0.00 s | (True, 25): greedy, not optimal |
 
 Optimum by counting: 2 autonomous starts + 8 activations + 2 thermal starts + 6 loads + 4 line energizations + 1 coupling = **23**.
 
@@ -144,11 +149,11 @@ Optimum by counting: 2 autonomous starts + 8 activations + 2 thermal starts + 6 
 - **Supply = demand = 8** (7 loads + 1 thermal start). By zone: NO 4/4, NE 2/1 (+1), **C 1/2 (−1)**, S 1/1 → zones must couple and share a block.
 - Keeps: 4 zones, one autonomous plant per zone, 1 thermal (reached from H1 by a short line), 2 long lines, 4 hospitals, B1 sharing NO1 with hospital P1 (priority rule).
 - **One exception to the generator's rule:** NE's border (NE2) sits behind NE's long line. It's solvable because NE has a spare block: after P2 is connected, one block stays free to couple with C. The version that follows the rule strictly was too big even aggregated (971k states).
-- Size: 7 substations, **139 aggregated / 122 individual** actions, 166k reachable aggregated states.
+- Size: 7 substations, **138 aggregated / 121 individual** actions.
 
-**Why it was resized (decision after step 4 review, option 1).** The original I3 (4 zones × 3 substations, 12 loads, 2 thermals, 14 blocks, 383 individual / 427 aggregated actions) could not be solved optimally by **any** configuration, not even aggregated (UCS and A*+hprec hit 500k nodes; A*+hprec with 1.5M nodes used 2.2 GB of RAM). Only greedy+hprec found a plan (cost 53, optimum 43 by counting). The goal of the resize: **aggregated solves it optimally, individual doesn't**, so I3 shows what aggregation gains (E3).
+**Why it was resized (decision after step 4 review, option 1; historical numbers, old `Cargada` rule).** The original I3 (4 zones × 3 substations, 12 loads, 2 thermals, 14 blocks, 383 individual / 427 aggregated actions) could not be solved optimally by **any** configuration, not even aggregated (UCS and A*+hprec hit 500k nodes; A*+hprec with 1.5M nodes used 2.2 GB of RAM). Only greedy+hprec found a plan (cost 53, optimum 43 by counting). The goal of the resize: **aggregated solves it optimally, individual doesn't**, so I3 shows what aggregation gains (E3).
 
-**Candidates tried** (aggregated unless noted, 120 s / 500k nodes):
+**Candidates tried** (historical: measured with the old `Cargada` rule while designing I3; aggregated unless noted, 120 s / 500k nodes):
 | Candidate | Description | Result |
 |---|---|---|
 | A | 8 substations, 9 loads, 1 thermal, 10 blocks | UCS / A*+hprec hit 500k (2 GB); A*+hmax/hadd hit 120 s |
@@ -156,36 +161,34 @@ Optimum by counting: 2 autonomous starts + 8 activations + 2 thermal starts + 6 
 | B2 / B3 | B with only NO+C / NO+NE+C | 417 / 32.7k states: **each extra zone multiplies the space ×30–80** |
 | D | 6 loads, T1 with 1 block | Rejected: the thermal is useless (uses 1 block, gives 1), optimum 22 < bound 24 |
 | D2 | D with H1 1 block, T1 2 blocks | Aggregated UCS 0.6 s, but individual UCS also solves it (2.7 s): gain too small |
-| **E (final)** | D2 + T1 with 3 blocks + load I1 at NO2 | 166k reachable states, results below |
+| **E (final)** | D2 + T1 with 3 blocks + load I1 at NO2 | chosen; current results below |
 | E2 | Like D2 but following the border rule strictly | 971k states; UCS hits 500k in both versions |
 
-**Real results, aggregated** (`cargar('I3')`, 139 actions):
+**Real results, aggregated** (`cargar('I3')`, 138 actions):
 | Mode + h | Cost | Length | Expanded | Generated | Time | `validar_plan` |
 |---|---|---|---|---|---|---|
-| ucs + h0 | 26 | 26 | 157,168 | 1,016,888 | 3.45 s | (True, 26) |
-| astar + hprec | 26 | 27 | 106,838 | 660,080 | 2.31 s | (True, 26) |
-| astar + hmax | 26 | 27 | 80,435 | 601,160 | 25.9 s | (True, 26) |
-| astar + hadd | 26 | 26 | 19,373 | 154,023 | 9.42 s | (True, 26) |
-| voraz + hadd | 26 | 26 | 264 | 1,924 | 0.13 s | (True, 26) |
-| voraz + hprec | 30 | 31 | 11,903 | 49,591 | 0.19 s | (True, 30) |
+| ucs + h0 | 26 | 26 | 88,689 | 566,640 | 1.78 s | (True, 26) |
+| astar + hprec | 26 | 27 | 76,865 | 484,275 | 1.62 s | (True, 26) |
+| astar + hmax | 26 | 27 | 52,841 | 384,468 | 15.3 s | (True, 26) |
+| astar + hadd | 26 | 26 | 17,046 | 134,286 | 7.55 s | (True, 26) |
+| voraz + hadd | 26 | 26 | 164 | 1,094 | 0.08 s | (True, 26) |
+| voraz + hprec | 30 | 31 | 9,093 | 37,779 | 0.14 s | (True, 30) |
 
-**Real results, individual** (`cargar('I3', agregada=False)`, 122 actions):
+**Real results, individual** (`cargar('I3', agregada=False)`, 121 actions):
 | Mode + h | Cost | Expanded | Generated | Time | Result |
 |---|---|---|---|---|---|
-| ucs + h0 | – | 500,000 | 3,512,941 | 13.0 s | node limit |
-| astar + hprec | – | 500,000 | 3,321,338 | 18.0 s | node limit |
-| astar + hmax | – | 286,884 | 2,088,808 | 120 s | time limit |
-| astar + hadd | 26 | 180,433 | 1,500,214 | 97.3 s | solved, (True, 26) |
-| voraz + hadd | 26 | 267 | 1,971 | 0.14 s | solved, (True, 26) |
-| voraz + hprec | 30 | 74,477 | 352,985 | 1.25 s | solved, (True, 30) |
-
-Memory peak: ~1.6 GB individual, ~0.4 GB aggregated.
+| ucs + h0 | – | 500,000 | 3,486,222 | 12.9 s | node limit |
+| astar + hprec | – | 500,000 | 3,388,253 | 14.8 s | node limit |
+| astar + hmax | – | 327,292 | 2,378,969 | 120 s | time limit |
+| astar + hadd | 26 | 176,113 | 1,463,207 | 81.3 s | solved, (True, 26) |
+| voraz + hadd | 26 | 167 | 1,141 | 0.08 s | solved, (True, 26) |
+| voraz + hprec | 30 | 57,021 | 266,583 | 0.91 s | solved, (True, 30) |
 
 **Optimum by counting:** 4 autonomous starts + 8 activations + 1 thermal start + 7 loads + 3 line energizations + 3 couplings = **26**, equal to what UCS and A* find. (Plan length 27 with cost 26 = one `ExtenderAlcance`, which costs 0.)
 
-**`ExtenderAlcance`:** UCS and A*+hadd don't use it; A*+hprec and A*+hmax use `ExtenderAlcance(NE,C,S)` once so P4 (in S) uses NE's block, at the same cost. Blocks can also travel through C by swaps.
+**`ExtenderAlcance`:** UCS and A*+hadd don't use it (length 26); A*+hprec and A*+hmax use it once (length 27, cost 26, because it costs 0). Blocks can also travel through C by swaps.
 
-**Aggregated optimal plan (UCS, cost 26):** start the 4 hydro plants (1–4) → activate their 5 blocks (5–9) → `EnergizarCorta(LNO12)` (10) → `ArrancarTermica(T1,NO2,NO,NO,1)` (11) → activate T1's 3 blocks (12–14) → `ConectarPrioritaria` P1 (15), P2 (16) → `EnergizarLarga(LNE12,NE1,NE2)` (17) → `ConectarCarga` B1 (18) → `AcoplarZonas(NO,C)` (19) → P3 with a NO block (20) → `EnergizarLarga(LC12,C1,C2)` (21) → `AcoplarZonas(C,NE)` (22) → B2 with an NE block (23) → `AcoplarZonas(C,S)` (24) → P4 (25) → I1 with C's block (26).
+**Aggregated optimal plan (UCS, cost 26):** start the 4 hydro plants (1–4) → activate their 5 blocks (5–9) → `EnergizarCorta(LNO12)` (10) → `ArrancarTermica(T1,NO2,NO,NO,1)` (11) → activate T1's 3 blocks (12–14) → `ConectarPrioritaria` P1 (15), P2 (16) → `EnergizarLarga(LNE12,NE1,NE2,NE,P2)` (17) → `ConectarCarga` B1 (18) → `AcoplarZonas(NO,C)` (19) → P3 with a NO block (20) → `EnergizarLarga(LC12,C1,C2,C,P3)` (21) → `AcoplarZonas(C,NE)` (22) → B2 with an NE block (23) → `AcoplarZonas(C,S)` (24) → P4 (25) → I1 with C's block (26).
 
 ### G(n): generator (✅ implemented)
 **Purpose.** I1–I3 are three fixed, hand-made grids. Experiments E2 ("how does the search scale?") and E5 ("where is it hard?") need **many grids of controlled size and difficulty**, so the generator builds them automatically. `n` controls the size, `margen` controls how many blocks there are compared to what's needed, and `semilla` makes it reproducible.
@@ -204,14 +207,14 @@ Memory peak: ~1.6 GB individual, ~0.4 GB aggregated.
 - Reproducible: same `(n, margen, semilla)` → identical grid; different seeds → different grids; global `random` untouched.
 - `validar` returns `[]` for n ∈ {4, 8, 12, 16, 20} × seeds 0–2 × margen {1.0, 1.2}. With margen 0.8 it reports the shortage in 14 of 15 cases (exception: n = 4, seed 1, where `ceil(0.8 × 3) = 3` removes the shortage).
 - Solvability: a fixed-order script plan validated **all 120** grids tested (n ∈ {4,8,12,16,20,40} × seeds 0–9 × margen {1.0, 1.2}).
-- Size (margen 1.0, seed 0): n = 4 → 59 actions, n = 8 → 389, n = 12 → 681, n = 16 → 1237, n = 20 → 1595.
+- Size (margen 1.0, seed 0, individual / aggregated actions): n = 4 → 58 / 90, n = 8 → 388 / 499, n = 12 → 681 / 809, n = 16 → 1,240 / 1,446, n = 20 → 1,598 / 1,789.
 
 Searches (individual version, seed 0, margen 1.0, limits 60 s / 300,000 nodes, one at a time):
-| n | ucs + h0 | astar + hprec | astar + hadd | voraz + hadd |
-|---|---|---|---|---|
-| 4 | 16 (23,422 exp., 0.23 s) | 16 (15,091 exp., 0.15 s) | 16 (1,182 exp., 0.27 s) | 16 (170 exp., 0.03 s) |
-| 8 | node limit | node limit | time limit | 41 (bound 39) |
-| 12 | node limit | node limit | time limit | time limit |
+| n | ucs + h0 | astar + hprec | astar + hadd | voraz + hadd | voraz + hprec |
+|---|---|---|---|---|---|
+| 4 | 16 (22,239 exp., 0.26 s) | 16 (14,012 exp., 0.13 s) | 16 (1,182 exp., 0.26 s) | 16 (170 exp., 0.03 s) | 16 (39 exp., 0.00 s) |
+| 8 (bound 39) | node limit | node limit | time limit | 41 (703 exp., 1.8 s) | 41 (1,028 exp., 0.03 s) |
+| 12 (bound 54) | node limit | node limit | time limit | time limit | 64 (8,640 exp., 0.55 s) |
 
 Consequences for the experiments: E2 jumps from "solved" (n = 4) to "nothing optimal finishes" (n = 8) with individual blocks, so E2 should step n by 1 and/or use the aggregated version. E5 should use n ≥ 8 so rounding doesn't hide the shortage.
 
@@ -249,7 +252,7 @@ The planner only knows sets of atoms, so "n" is part of the atom name: `Libres(N
 Initial state adds `Libres(z,0)` and `Activados(c,0)`. Goal is unchanged. The upper bound of each counter is the number of blocks in that zone/plant. This also keeps the "no action achieves two goal atoms" property, so hprec stays admissible.
 
 ### Where the code goes (decided: Q2 and Q6)
-New file **`dominio_agregado.py`** with `problema_agregado(red)`; it imports from `dominio.py` the unchanged parts (`Accion`, `atomo`, `estado_inicial`, `objetivo`, the schemas without blocks). **`dominio.py` is untouched**: its `problema_agregado` stub remains (Eloísa can delete it or point it to the new file). `instancias.cargar(nombre, agregada=True)` now calls `dominio_agregado.problema_agregado`, so `python main.py` works without `--individual` (this also solves Q5). Q6 ("same fixes") was read as **same rules**: every rule of the individual version is copied exactly, including its quirks.
+New file **`dominio_agregado.py`** with `problema_agregado(red)`; it imports from `dominio.py` the unchanged parts (`Accion`, `atomo`, `estado_inicial`, `objetivo`, the schemas without blocks). **`dominio.py` was not touched by Milagros**; Eloísa later deleted its old `problema_agregado` stub (commit `689c54f`). `instancias.cargar(nombre, agregada=True)` now calls `dominio_agregado.problema_agregado`, so `python main.py` works without `--individual` (this also solves Q5). Q6 ("same fixes") was read as **same rules**: every rule of the individual version is copied exactly, including its quirks.
 
 ### Verification
 - I1 aggregated: optimal cost must be **14 as well** (same semantics ⇒ same optimal cost).
@@ -258,49 +261,49 @@ New file **`dominio_agregado.py`** with `problema_agregado(red)`; it imports fro
 
 ### ✅ Real results
 
-**Invariants.** 200 random walks × 50 actions (seed 42) on I1, I2, I3, G(4) seeds 0/1/2 and G(16): 10,000 states per instance, 0 failures. Always exactly one `Libres(z,·)` per zone and one `Activados(c,·)` per plant, all within bounds, and per zone *free + in use (`Usa` + `Auxiliar`) = activated*. No action adds more than one goal atom and no cost-0 action adds any, so **hprec stays admissible**.
+**Invariants** (measured before the 2026-10-12 change; that change only touched `EnergizarLarga`, which doesn't touch any counter, so they still hold). 200 random walks × 50 actions (seed 42) on I1, I2, I3, G(4) seeds 0/1/2 and G(16): 10,000 states per instance, 0 failures. Always exactly one `Libres(z,·)` per zone and one `Activados(c,·)` per plant, all within bounds, and per zone *free + in use (`Usa` + `Auxiliar`) = activated*. No action adds more than one goal atom and no cost-0 action adds any, so **hprec stays admissible**.
 
-**Same semantics, checked on the whole state space.** Every reachable state of both versions was enumerated; converting each individual state into counters gives **exactly** the set of aggregated reachable states:
+**Same semantics, checked on the whole state space** (re-checked after the 2026-10-12 change). Every reachable state of both versions was enumerated; converting each individual state into counters gives **exactly** the set of aggregated reachable states:
 | Instance | Individual states | Aggregated states | Sets equal |
 |---|---|---|---|
-| I1 | 1,583 | 81 | yes |
-| I2 | 121,320 | 6,066 | yes |
-| G(4) seed 0 | 25,582 | 446 | yes |
+| I1 | 1,321 | 62 | yes |
+| I2 | 70,365 | 3,287 | yes |
+| G(4) seed 0 | 24,399 | 403 | yes |
 | G(4) seed 1 | 217 | 52 | yes |
-| G(4) seed 2 | 5,108 | 102 | yes |
+| G(4) seed 2 | 3,993 | 82 | yes |
 
 **Individual vs aggregated** (120 s / 500k nodes; every plan passes `validar_plan`). Cells: cost / expanded / generated / time (s).
 | Instance | Config | Individual | Aggregated |
 |---|---|---|---|
-| I1 (65 vs 99 actions) | ucs | 14 / 1511 / 8141 / 0.02 | 14 / 79 / 279 / 0.00 |
-| I1 | A*+hprec | 14 / 936 / 4737 / 0.01 | 14 / 54 / 173 / 0.00 |
-| I1 | A*+hmax | 14 / 1040 / 6113 / 0.12 | 14 / 68 / 235 / 0.01 |
-| I1 | A*+hadd | 14 / 287 / 1605 / 0.05 | 14 / 36 / 124 / 0.01 |
-| I1 | voraz+hadd | 14 / 39 / 169 / 0.01 | 14 / 29 / 89 / 0.01 |
-| I2 (118 vs 146 actions) | ucs | 23 / 108456 / 552926 / 1.74 | 23 / 5791 / 25498 / 0.09 |
-| I2 | A*+hprec | 23 / 60805 / 287608 / 0.98 | 23 / 4190 / 17723 / 0.06 |
-| I2 | A*+hmax | 23 / 74589 / 417416 / 18.80 | 23 / 4815 / 21989 / 1.35 |
-| I2 | A*+hadd | 23 / 32432 / 177178 / 11.05 | 23 / 2353 / 11640 / 0.95 |
-| I2 | voraz+hadd | 23 / 211 / 1052 / 0.10 | 23 / 125 / 594 / 0.08 |
-| G(4) s0 | ucs | 16 / 23422 / 113451 / 0.24 | 16 / 439 / 1627 / 0.00 |
-| G(4) s0 | A*+hprec | 16 / 15091 / 70846 / 0.15 | 16 / 354 / 1310 / 0.00 |
-| G(4) s0 | A*+hmax | 16 / 17359 / 92629 / 2.04 | 16 / 404 / 1532 / 0.06 |
-| G(4) s0 | A*+hadd | 16 / 1182 / 5950 / 0.26 | 16 / 86 / 373 / 0.02 |
+| I1 (68 vs 102 actions) | ucs | 14 / 1273 / 6579 / 0.01 | 14 / 61 / 214 / 0.00 |
+| I1 | A*+hprec | 14 / 904 / 4599 / 0.01 | 14 / 47 / 158 / 0.00 |
+| I1 | A*+hmax | 14 / 890 / 5047 / 0.10 | 14 / 54 / 186 / 0.01 |
+| I1 | A*+hadd | 14 / 281 / 1595 / 0.04 | 14 / 33 / 119 / 0.01 |
+| I1 | voraz+hadd | 14 / 36 / 164 / 0.01 | 14 / 26 / 84 / 0.01 |
+| I2 (117 vs 145 actions) | ucs | 23 / 68061 / 318128 / 1.05 | 23 / 3252 / 13485 / 0.05 |
+| I2 | A*+hprec | 23 / 50146 / 232955 / 0.78 | 23 / 2881 / 11931 / 0.04 |
+| I2 | A*+hmax | 23 / 50350 / 260611 / 11.63 | 23 / 2868 / 12288 / 0.81 |
+| I2 | A*+hadd | 23 / 27486 / 146768 / 8.23 | 23 / 1694 / 8001 / 0.61 |
+| I2 | voraz+hadd | 23 / 161 / 754 / 0.07 | 23 / 94 / 434 / 0.06 |
+| G(4) s0 (58 vs 90 actions) | ucs | 16 / 22239 / 106320 / 0.26 | 16 / 396 / 1450 / 0.00 |
+| G(4) s0 | A*+hprec | 16 / 14012 / 64339 / 0.13 | 16 / 314 / 1142 / 0.00 |
+| G(4) s0 | A*+hmax | 16 / 16256 / 85898 / 1.89 | 16 / 362 / 1358 / 0.05 |
+| G(4) s0 | A*+hadd | 16 / 1182 / 5950 / 0.26 | 16 / 86 / 373 / 0.03 |
 | G(4) s0 | voraz+hadd | 16 / 170 / 621 / 0.03 | 16 / 31 / 118 / 0.01 |
-| G(4) s1 | ucs | 9 / 197 / 605 / 0.00 | 9 / 50 / 123 / 0.00 |
-| G(4) s1 | A*+hprec | 9 / 145 / 476 / 0.00 | 9 / 38 / 100 / 0.00 |
-| G(4) s1 | A*+hmax | 9 / 111 / 395 / 0.01 | 9 / 34 / 88 / 0.00 |
+| G(4) s1 | ucs | 9 / 197 / 641 / 0.00 | 9 / 50 / 129 / 0.00 |
+| G(4) s1 | A*+hprec | 9 / 145 / 507 / 0.00 | 9 / 38 / 106 / 0.00 |
+| G(4) s1 | A*+hmax | 9 / 111 / 407 / 0.01 | 9 / 34 / 90 / 0.00 |
 | G(4) s1 | A*+hadd | 9 / 16 / 61 / 0.00 | 9 / 9 / 24 / 0.00 |
 | G(4) s1 | voraz+hadd | 9 / 10 / 37 / 0.00 | 9 / 9 / 24 / 0.00 |
-| G(4) s2 | ucs | 14 / 4628 / 20221 / 0.04 | 14 / 97 / 291 / 0.00 |
-| G(4) s2 | A*+hprec | 14 / 3269 / 13964 / 0.03 | 14 / 74 / 216 / 0.00 |
-| G(4) s2 | A*+hmax | 14 / 3264 / 15404 / 0.31 | 14 / 82 / 245 / 0.01 |
-| G(4) s2 | A*+hadd | 14 / 154 / 718 / 0.03 | 14 / 24 / 82 / 0.01 |
-| G(4) s2 | voraz+hadd | 14 / 20 / 95 / 0.01 | 14 / 24 / 82 / 0.01 |
+| G(4) s2 | ucs | 14 / 3873 / 16601 / 0.03 | 14 / 81 / 243 / 0.00 |
+| G(4) s2 | A*+hprec | 14 / 3209 / 13864 / 0.03 | 14 / 71 / 213 / 0.00 |
+| G(4) s2 | A*+hmax | 14 / 2974 / 13844 / 0.26 | 14 / 74 / 222 / 0.01 |
+| G(4) s2 | A*+hadd | 14 / 154 / 718 / 0.02 | 14 / 24 / 82 / 0.00 |
+| G(4) s2 | voraz+hadd | 14 / 20 / 95 / 0.01 | 14 / 16 / 50 / 0.00 |
 
-Same optimum everywhere both finish; the aggregated version expands **14–50× fewer nodes** on I2 and G(4) seed 0.
+Same optimum everywhere both finish; the aggregated version expands **16–21× fewer nodes on I2 and 14–56× fewer on G(4) seed 0**. The current I3 is in section 2: aggregated, every configuration finishes (UCS 1.8 s); individual, only A*+hadd (81 s) and the greedy searches do.
 
-**Original I3 (12 substations, 14 blocks), aggregated, before resizing:**
+**Original I3 (12 substations, 14 blocks), aggregated, before resizing** (historical, old `Cargada` rule):
 | Config | Result | Expanded | Generated | Time (s) |
 |---|---|---|---|---|
 | ucs | node limit | 500,000 | 4,274,366 | 24.6 |
@@ -316,20 +319,20 @@ Same optimum everywhere both finish; the aggregated version expands **14–50× 
 **G(n) aggregated, margen 1.0, seed 0 (120 s / 500k):**
 | n | ucs | A*+hprec | A*+hadd | voraz+hadd | voraz+hprec |
 |---|---|---|---|---|---|
-| 8 (bound 39) | node limit, 27 s | node limit, 34 s | time limit (25,895 exp.) | **41**, 344 exp., 1.3 s | **41**, 380 exp., 0.01 s |
-| 12 (bound 54) | node limit, 40 s | node limit, 48 s | time limit (7,135 exp.) | time limit (34,195 exp.) | **64**, 1,616 exp., 0.11 s |
-| 16 (bound 72) | node limit, 57 s | node limit, 65 s | time limit (3,216 exp.) | time limit (5,376 exp.) | node limit, 83 s |
+| 8 (bound 39) | node limit, 26 s | node limit, 28 s | time limit (26,866 exp.) | **41**, 314 exp., 1.1 s | **41**, 375 exp., 0.01 s |
+| 12 (bound 54) | node limit, 36 s | node limit, 42 s | time limit (7,335 exp.) | time limit (35,067 exp.) | **64**, 1,611 exp., 0.10 s |
+| 16 (bound 72) | node limit, 55 s | node limit, 58 s | time limit (3,336 exp.) | time limit (5,850 exp.) | node limit, 76 s |
 
 **Heuristic values at the initial state are identical in both versions:**
 | Instance | hprec | hmax | hadd |
 |---|---|---|---|
 | I1 | 5 | 5 | 38 |
 | I2 | 7 | 6 | 51 |
-| original I3 | 15 | 6 | 129 |
+| I3 | 10 | 5 | 65 |
 
-**`main.py`:** `python3 main.py --instancia I2 --algoritmo astar --heuristica hprec` now runs aggregated by default: valid 23-step plan, 4,190 expanded, 0.07 s.
+**`main.py`:** `python3 main.py --instancia I2 --algoritmo astar --heuristica hprec` now runs aggregated by default: valid 23-step plan, 2,881 expanded, 0.04 s.
 
-**I1 aggregated optimal plan (ucs, cost 14):** `ArrancarAutonomo(H1,S1)` → `ActivarBloque(H1,N,0,0)` → `ActivarBloque(H1,N,1,1)` → `ConectarPrioritaria(P1,S1,N,N,2)` → `EnergizarLarga(L12,S1,S2,N)` → `ArrancarTermica(T1,S2,N,N,1)` → `ActivarBloque(T1,N,0,0)` … `(T1,N,3,3)` (4 steps) → `ConectarCarga(B1,S1,N,N,4)` → `ConectarCarga(B2,S1,N,N,3)` → `ConectarCarga(I1,S2,N,N,2)` → `ConectarCarga(I2,S2,N,N,1)`. Reading the numbers: `ActivarBloque(c,z,m,n)` = plant `c` had `m` activated, zone `z` had `n` free; `Conectar…(…,n)` = zone had `n` free before connecting.
+**I1 aggregated optimal plan (ucs, cost 14):** `ArrancarAutonomo(H1,S1)` → `ActivarBloque(H1,N,0,0)` → `ActivarBloque(H1,N,1,1)` → `ConectarPrioritaria(P1,S1,N,N,2)` → `EnergizarLarga(L12,S1,S2,N,P1)` → `ArrancarTermica(T1,S2,N,N,1)` → `ActivarBloque(T1,N,0,0)` … `(T1,N,3,3)` (4 steps) → `ConectarCarga(B1,S1,N,N,4)` → `ConectarCarga(B2,S1,N,N,3)` → `ConectarCarga(I1,S2,N,N,2)` → `ConectarCarga(I2,S2,N,N,1)`. Reading the numbers: `ActivarBloque(c,z,m,n)` = plant `c` had `m` activated, zone `z` had `n` free; `Conectar…(…,n)` = zone had `n` free before connecting.
 
 ---
 
@@ -367,7 +370,7 @@ Returns: `resuelto`, `maniobras` (executed), `maniobras_extra` (executed − ori
 
 ### ✅ Done: implemented in `replanificacion.py` (real results)
 
-**Final interface** (E4 is Eloísa's; this is what she calls):
+**Final interface** (used by E4 in `experimentos.py`):
 - `averia_linea(estado, linea) -> estado`
 - `disparo_central(estado, central, red) -> (estado, cargas_perdidas)` (rules A–E of Q4 in the docstring)
 - `ejecutar_con_fallos(red, acciones, inicial, objetivo, heuristica, modo="astar", prob_fallo=0.1, semilla=0, limite_tiempo=60, limite_nodos=300_000, tipos_fallo=("linea", "central"), eventos_programados=None) -> dict`
@@ -384,19 +387,19 @@ Returns: `resuelto`, `maniobras` (executed), `maniobras_extra` (executed − ori
 - **`maniobras_extra = None` when not solved:** subtracting costs from a half-executed run would distort E4's averages.
 - `cargas_perdidas` counts supply losses: a load lost twice counts twice.
 
-**Verification (individual version, one search at a time, 60 s / 300k nodes). Re-run by the main session: identical.**
+**Verification (individual version, one search at a time, 60 s / 300k nodes). Re-run after the 2026-10-12 change: identical outcomes.**
 
 | Test | Config | Result |
 |---|---|---|
 | `prob_fallo = 0`, I1 | A*+hadd | solved, cost 14, extra 0, 0 replans (same plan as `buscar`) |
-| `prob_fallo = 0`, I2 | A*+hadd | solved, cost 23, extra 0, 0 replans (11 s initial search) |
+| `prob_fallo = 0`, I2 | A*+hadd | solved, cost 23, extra 0, 0 replans (8.2 s initial search) |
 | I1, T1 trips before step 11 | A*+hadd | `sin_solucion`: B1, B2 lost; 4 blocks needed, only 1 left (H1's block given back by C) |
 | I1, line L12 fails before step 0 | A*+hadd | `sin_solucion`: L12 is the only way to S2 |
 | I1, L12 fails at step 6 (already used) | A*+hadd | solved, extra 0, no replan |
 | I1 + spare parallel line (scratch only) | A*+hadd | L12 fails at step 0 → 1 replan, solved, extra 0 |
 | I1 + spare thermal T2 with 4 blocks (scratch only) | A*+hadd | T1 trips at step 11 → 1 replan, solved, cost 20 (extra 6: start T2, 4 blocks, reconnect B1, B2) |
 
-I2, `prob_fallo = 0.1`, A*+hprec (fastest optimal config on individual I2, cheap per node; each run 1.0–1.3 s, replans ≤ 0.11 s):
+I2, `prob_fallo = 0.1`, A*+hprec (fastest optimal config on individual I2, cheap per node; each replan ≤ 0.08 s):
 
 | Seed | Result | Extra | Events |
 |---|---|---|---|
@@ -415,7 +418,7 @@ I2, `prob_fallo = 0.1`, A*+hprec (fastest optimal config on individual I2, cheap
 - Same seed twice ⇒ identical result (checked on seeds 0 and 1, time fields excluded).
 - `limite_nodos = 10` on I2 ⇒ `motivo = "limite_nodos"`, `coste_plan_original = None` (the "search gave up" path works).
 
-**⚠️ Finding for E4 (Eloísa's):** I1–I3 have **exact supply and no spare paths**, so almost every failure is fatal. A plant trip that hits a needed block, or a line failure before the line is used, ends in `sin_solucion`. A line failure after use does nothing. On these instances E4 would mostly measure "% unsolvable", not extra maneuvers, and can't really test the proposal's prediction "trips cost more than line failures". To show recoveries, E4 needs grids with spare capacity: `red_generada(n, margen > 1)` gives spare blocks (helps with trips) but still no spare lines. Alternatively, add a spare line/plant variant. **Solved:** E4 was implemented by Milagros with a redundant variant `red_i2_reserva` (see section 4b).
+**⚠️ Finding for E4:** I1–I3 have **exact supply and no spare paths**, so almost every failure is fatal. A plant trip that hits a needed block, or a line failure before the line is used, ends in `sin_solucion`. A line failure after use does nothing. On these instances E4 would mostly measure "% unsolvable", not extra maneuvers, and can't really test the proposal's prediction "trips cost more than line failures". To show recoveries, E4 needs grids with spare capacity: `red_generada(n, margen > 1)` gives spare blocks (helps with trips) but still no spare lines. Alternatively, add a spare line/plant variant. **Solved:** E4 was implemented by Milagros with a redundant variant `red_i2_reserva` (see section 4b).
 
 ## 4b. Experiment E4: failures and replanning (✅ done, Milagros)
 
@@ -427,7 +430,7 @@ I2, `prob_fallo = 0.1`, A*+hprec (fastest optimal config on individual I2, cheap
 - **Why I2-reserva exists:** I2 has exact supply and one path per substation, so almost any failure is final. Without spares, E4 could only measure "% unsolvable".
 - **Why twin lines and not lines closing a loop:** a loop line (S1–S3, S5–S6) multiplies the possible energizing orders, and A*+hprec didn't finish in 1M nodes. A parallel line creates no new states (the destination ends up lit either way), so the search doesn't grow.
 - **Why a 2-block thermal as the spare and not a spare block:** a spare block on a hydro or thermal plant makes the plan *cheaper* (optimum 20–21), so "extra maneuvers" would be measured against a different optimum. A 2-block thermal costs the same as using T1/T2 (start + 2 activations for 1 net block), so the optimum stays 23. It sits at S6 because the search grows least there (compared with S2/S3/S5).
-- **Why I3 and I1 are left out:** with individual blocks, only A*+hadd solves I3, in ~97 s per search, which is too slow to repeat for many seeds. I1 is a toy with no redundancy and adds nothing beyond I2.
+- **Why I3 and I1 are left out:** with individual blocks, the only optimal search that solves I3 is A*+hadd, in ~81 s per search, which is too slow to repeat for many seeds. I1 is a toy with no redundancy and adds nothing beyond I2.
 - **Factors:** failure type (lines only vs plants only, to compare them) × `prob_fallo` ∈ {0.05, 0.1, 0.2} × 15 seeds (`SEMILLA + i`). The whole E4 takes 443 s (~7.4 min, 180 runs).
 - **Paired comparison:** the same seed rolls the die the same way for both failure types, so failures land on the same steps.
 - **A* + hprec:** admissible, so every plan and replan is optimal and "extra" is measured against the minimum. It's the fastest optimal config on individual I2. Limits: 60 s / 300k nodes per search (never reached).
@@ -519,6 +522,8 @@ Generate I1 frames (15 images: initial + 14 steps) and open a couple to check th
 
 **Summary of optimal costs:** I1 = 14, I2 = 23, I3 = 26 (all equal to the counting bound; same in both versions).
 
+**All numbers in this file were re-measured on 2026-10-13, after Eloísa's `Cargada` change** (except the tables labelled "historical").
+
 After each part: run it, report the real output, and stop for your review if you want to go step by step.
 
 ---
@@ -526,9 +531,10 @@ After each part: run it, report the real output, and stop for your review if you
 ## 7. Things noticed in Eloísa's `dominio.py` (not touching them, just flagging)
 
 1. ✅ ~~**`Cargada(S)` is never deleted.**~~ **Fixed by Eloísa (commit `689c54f` "quitar cargada", 2026-10-12):** `Cargada` no longer exists. `EnergizarLarga` now has one copy per load k of the origin substation and requires `Suministrada(k)`: a load must be connected **right now**, so shedding the only load blocks the long line again. The aggregated version imports `energizar_larga` from `dominio.py`, so both versions stay identical (stale docstrings fixed). The same commit also: removed the `dominio.problema_agregado` stub; added a `validar` check "at most one autonomous plant per zone" (I1–I3, I2-reserva and G(8) seeds 0–2 still pass); and reformatted `instancias.py` / `replanificacion.py` (rule E of `disparo_central` no longer mentions `Cargada`).
-   **Re-checked after the change:** optima unchanged (I1 14 both versions; I2 23 both; I3 aggregated 26), but fewer nodes are expanded: I1 individual UCS 1,273 (61 aggregated); I2 individual A*+hprec 50,146 (was 60,805); I2 aggregated UCS 3,252; I3 aggregated UCS 88,689 in 1.8 s (was 157k, 3.5 s). **The node counts and times quoted in sections 1–4 and 9.1–9.6 were measured before this change and are outdated** (the optimal costs are still valid). E1–E3 (Eloísa) will produce the new ones. E4 (section 4b) was re-run with the new rule.
+   **Re-checked after the change (2026-10-13):** optimal costs unchanged (I1 14, I2 23, I3 26, both versions), the two versions still have exactly the same reachable states, and every table in sections 1–4 was re-measured with the new rule (searches now expand fewer nodes: e.g. I2 individual UCS 68k instead of 108k). Tables labelled "historical" record how instances were designed and keep their old numbers on purpose.
+
 2. **Cross-zone lines are silently ignored** in `energizar_corta/larga`. `validar(red)` will catch it on the instance side.
-3. ~~`instancias.cargar` defaults to `agregada=True`, but the aggregated version doesn't exist yet, so `python main.py` without `--individual` crashes.~~ **Solved in step 4:** `cargar` now uses `dominio_agregado.py`. The `problema_agregado` stub in `dominio.py` remains (Eloísa can delete it or point it to the new file).
+3. ~~`instancias.cargar` defaults to `agregada=True`, but the aggregated version doesn't exist yet, so `python main.py` without `--individual` crashes.~~ **Solved in step 4:** `cargar` now uses `dominio_agregado.py`. Eloísa deleted the old stub in `dominio.py` (commit `689c54f`).
 4. README says the delete field is `del`. In the code it's `dele` (`del` is a reserved Python word).
 
 ---
@@ -550,21 +556,21 @@ Points worth a slide or a prepared answer. Added as they come up during implemen
 
 ### 9.1 Tie-break by lower h in A* (step 1)
 - **What:** when two nodes in the open list have the same `f = g + h`, A* expands the one with the **lower h** first, i.e. the one the heuristic estimates closest to the goal. If `h` also ties, the oldest one (FIFO).
-- **Why it was needed:** I1 is small (1583 reachable states) and many states share `f = 14` (the optimal cost). With FIFO only, A* first expanded the old, shallow states with `f = 14` (lots of `g`, little progress) before reaching those close to the goal. That hid the benefit of the heuristics: A*+hmax expanded exactly as many nodes as h0 (1511).
+- **Why it was needed:** I1 is small (1,321 reachable states) and many states share `f = 14` (the optimal cost). With FIFO only, A* first expanded the old, shallow states with `f = 14` (lots of `g`, little progress) before reaching those close to the goal. That hid the benefit of the heuristics: A* expanded **1,273 nodes with every heuristic**, exactly as many as h0 / UCS.
 - **Why it doesn't break optimality:** A* is optimal because it never expands a node with `f` greater than the optimal cost before finding the goal. The tie-break only reorders nodes **with the same f**, so that guarantee is untouched. All admissible configurations still return cost 14.
-- **Effect (I1, expanded nodes):** hprec 1389 → 936, hmax 1511 → 1040, hadd 1347 → 287. UCS (h = 0 always) and greedy (f is already h) are unchanged, as expected.
+- **Effect (I1, expanded nodes, FIFO → lower-h tie-break):** hprec 1,273 → 904, hmax 1,273 → 890, hadd 1,273 → 281. UCS (h = 0 always) and greedy (f is already h) are unchanged, as expected.
 - **One sentence to say:** *"When two nodes have the same f we expand the one with smaller h, because it is probably closer to the goal; it doesn't affect optimality since A\* only reorders nodes with equal f, but it avoids exploring many equivalent shallow nodes."*
 
 ### 9.2 Results that may get questions (step 1)
-- **hprec (936) expands fewer nodes than hmax (1040) on I1.** Not a bug: hmax takes the **most expensive single** goal and ignores the rest, while hprec **counts every** missing goal. In I1 the goals (5 loads) are many and similar in cost, so "how many are missing" is more informative than "the hardest one". Both are admissible, neither dominates the other in general.
-- **hmax/hadd are ~10× slower per node than hprec**, even if they expand fewer nodes: they recompute the relaxed problem (a fixpoint over all actions) for each generated state. Fewer nodes ≠ less time; E1/E2 should report both.
+- **hprec and hmax expand almost the same on I1 (904 vs 890) and I2 (50,146 vs 50,350).** Not a contradiction: hmax takes the **most expensive single** goal and ignores the rest, hprec **counts every** missing goal. With many similar goals (5 loads in I1) both give similar guidance. Both are admissible and neither dominates the other in general (aggregated I2: hprec 2,881 vs hmax 2,868).
+- **hmax/hadd are ~15× slower per node than hprec**, even when they expand fewer nodes: they recompute the relaxed problem (a fixpoint over all actions) for each generated state. I2 individual: hprec 0.78 s vs hmax 11.6 s for ~50k nodes each. Fewer nodes ≠ less time; E1/E2 should report both.
 - **hadd is not admissible but found the optimal cost (14) on I1.** Allowed, not guaranteed: on bigger instances it may return cost > optimal.
-- **Greedy + hadd needed only 39 expansions** and also found 14 on I1, by luck of the instance, not by guarantee.
+- **Greedy + hadd needed only 36 expansions** and also found 14 on I1, by luck of the instance, not by guarantee. **Greedy + hprec shows the risk:** on I2 it returns cost **25** instead of 23, and on I3 30 instead of 26.
 
 ### 9.3 Instances and `validar` (step 2)
 - **Three instances of increasing difficulty, on purpose.** I1 is the toy explained by hand (optimum 14). I2 is sized so that **every** search finds the optimum (23) with individual blocks, which makes E1 a fair comparison of heuristics. I3 (resized in step 4, optimum 26) is solved optimally by every search in the aggregated version but not by UCS / A*+hprec / A*+hmax in the individual one, so it shows what aggregation gains (E3).
-- **Why individual blocks explode.** Once zones are coupled, any free block can feed any load. "B2 uses block 1" and "B2 uses block 2" are different states for the search but equivalent in practice. The first I2 (10 blocks) reached 1.1M expanded nodes in 120 s without finishing, while the resized I2 (8 blocks) is solved by UCS in 2 s.
-- **Optimal cost by counting.** When supply equals demand, every block must be activated, every substation energized and every load connected, so the optimum is the number of unavoidable maneuvers: I1 14, I2 23, I3 43. It is an independent check of the planner's result.
+- **Why individual blocks explode.** Once zones are coupled, any free block can feed any load. "B2 uses block 1" and "B2 uses block 2" are different states for the search but equivalent in practice. The first I2 (10 blocks) reached 1.1M expanded nodes in 120 s without finishing, while the resized I2 (8 blocks) is solved by UCS in about 1 s.
+- **Optimal cost by counting.** When supply equals demand, every block must be activated, every substation energized and every load connected, so the optimum is the number of unavoidable maneuvers: I1 14, I2 23, I3 26 (the original, bigger I3: 43). It is an independent check of the planner's result.
 - **`validar` checks necessary conditions, not a proof.** It covers an autonomous plant per zone, lines inside one zone, a BFS that respects the long-line rule, interconnections between zones, enough blocks, and hmax ≠ ∞. The planner finding a plan is the real proof.
 - **`ExtenderAlcance` is available in I3 but never strictly needed.** Blocks are interchangeable, so a block can also "travel" N→C→S as a chain of swaps at the same cost. It is still correct to include it: the goal only contains directly interconnected pairs, as the domain requires.
 - **Practical limit of the experiments.** The search keeps every state in memory and checks the time limit only between expansions, so a run that fills the RAM can overshoot its limit (223 s on a 120 s limit). Experiments run one configuration at a time and also use `limite_nodos`.
@@ -578,15 +584,15 @@ Points worth a slide or a prepared answer. Added as they come up during implemen
 
 ### 9.5 The aggregated version (step 4)
 - **Idea in one sentence.** Instead of naming each block, count how many free blocks each zone has (`Libres(z,n)`); the number is part of the atom's name and "3 follows 2" is resolved at instantiation, like every static predicate. States that differ only in *which* block a load uses collapse into one.
-- **Same semantics, proved on every reachable state.** Converting each individual state into counters gives exactly the set of aggregated states (I1 1,583 → 81, I2 121,320 → 6,066, G(4) s0 25,582 → 446), so the optimal costs are identical: 14, 23, 16, 9, 14.
-- **Aggregation removes symmetry, not combinations.** 14–50× fewer expanded nodes on I2 and G(4) with the same optimum, but the original I3 and G(n ≥ 8) still don't finish optimally: zones progress independently and the number of possible orders still grows exponentially. That is why I3 was resized.
+- **Same semantics, proved on every reachable state.** Converting each individual state into counters gives exactly the set of aggregated states (I1 1,321 → 62, I2 70,365 → 3,287, G(4) s0 24,399 → 403), so the optimal costs are identical: 14, 23, 16, 9, 14.
+- **Aggregation removes symmetry, not combinations.** 16–21× fewer expanded nodes on I2 and 14–56× on G(4) s0 with the same optimum, but the original I3 and G(n ≥ 8) still don't finish optimally: zones progress independently and the number of possible orders still grows exponentially. That is why I3 was resized.
 - **hmax and hadd give exactly the same values in both versions.** In both relaxations one free block "never runs out" (`Libre(b)` or `Libres(z,1)` is never deleted), so the relaxation is equally optimistic. The gain of aggregation is in the number of states, not in the heuristic.
-- **Greedy + hprec scales better than greedy + hadd on big instances** (original I3: 53 in 0.01 s; G(12): 64 in 0.11 s), but its plans are above the optimum. *Hypothesis, not measured:* greedy + hadd gets lost because the relaxation doesn't see blocks running out, and each hadd evaluation is expensive.
-- **More grounded actions, not slower.** There is one action copy per counter value (I1: 99 vs 65 actions), but only one copy can apply in each state.
+- **Greedy + hprec scales better than greedy + hadd on big instances** (original I3: 53 in 0.01 s; G(12): 64 in 0.10 s aggregated, 0.55 s individual), but its plans are above the optimum. *Hypothesis, not measured:* greedy + hadd gets lost because the relaxation doesn't see blocks running out, and each hadd evaluation is expensive.
+- **More grounded actions, not slower.** There is one action copy per counter value (I1: 102 vs 68 actions), but only one copy can apply in each state.
 
 ### 9.6 The resized I3 (after step 4)
-- **I3 shows the gain of aggregation on one instance.** Same network, same optimum (26): aggregated UCS finishes in 3.5 s (157k expansions); individual UCS and A*+hprec stop at the 500k-node limit and A*+hmax at 120 s. Only A*+hadd finishes individually, in 97 s.
-- **Why I3 is small: zones multiply the space.** Each zone's maneuvers can be interleaved with the others', so every extra zone multiplied the reachable space ×30–80 in the tests (2 zones: 417 states; 3 zones: 32.7k; 4 zones: hundreds of thousands). The original 12-substation I3 couldn't be solved optimally even aggregated.
+- **I3 shows the gain of aggregation on one instance.** Same network, same optimum (26): aggregated UCS finishes in 1.8 s (88.7k expansions); individual UCS and A*+hprec stop at the 500k-node limit and A*+hmax at 120 s. Of the optimal searches, only A*+hadd finishes individually, in 81 s.
+- **Why I3 is small: zones multiply the space.** Each zone's maneuvers can be interleaved with the others', so every extra zone multiplied the reachable space ×30–80 in the design tests (old rule) (2 zones: 417 states; 3 zones: 32.7k; 4 zones: hundreds of thousands). The original 12-substation I3 couldn't be solved optimally even aggregated.
 - **Why it was resized and not kept big.** An instance that no optimal search finishes gives E1 nothing to compare. The scaling limit is shown instead by G(n) in E2, where it can be measured step by step.
 - **`ExtenderAlcance` is grounded but optional.** The goal only has C–NO, C–NE and C–S. UCS reaches the optimum without it (blocks swap through C); A*+hprec and A*+hmax use it once, at cost 0.
 - **A thermal must be worth starting.** A candidate with a 1-block thermal was rejected: starting it costs a block and gives one back, so the optimum (22) was below the expected count (24). The final T1 has 3 blocks.
@@ -594,12 +600,12 @@ Points worth a slide or a prepared answer. Added as they come up during implemen
 ### 9.7 Replanning (step 5)
 - **Two states, one sentence.** *"The plan lives in the believed state; the world lives in the real state. Before every step the agent observes the real state and checks that the rest of the plan still reaches the goal from there; if not, it replans from what is really there."*
 - **Why check the whole rest of the plan, not just the next action.** A broken line may only be needed 10 steps later. Checking the whole rest detects it now, before wasting maneuvers on a plan that will fail.
-- **Why replan instead of "repairing" the plan.** The planner is already there and is optimal with A*: replanning from the real state gives the cheapest way to finish from where we actually are. Replans on I2 take ≤ 0.11 s.
+- **Why replan instead of "repairing" the plan.** The planner is already there and is optimal with A*: replanning from the real state gives the cheapest way to finish from where we actually are. Replans on I2 take ≤ 0.08 s.
 - **Why the individual version.** When a plant trips we must know *which* loads were using *its* blocks (`Usa(k,b)`). Counters (`Libres(z,n)`) forget that.
 - **DisparoCentral rules (A–E), each with its why:** blocks disappear (the plant produces nothing); their loads are lost (they had no other energy); a tripped thermal gives back its borrowed block (its machinery is off), only if that block still exists; no chain reaction (the borrowed block is only needed to *start* a thermal, no action checks it later); voltage stays (simplification: other sources hold it).
 - **Possible question: "seed 1 recovers with only +1, isn't T1's trip suspicious?"** T1's second block had been lent to start T2. By rule D, T2 keeps running, and by rule C, T1's own borrowed block comes back. So losing T1 costs no blocks overall, and only B2 needs to be reconnected (+1). It follows the agreed rules; a cascade (rule D the other way) would have made it fatal.
 - **Reproducible randomness.** Only `random.Random(semilla)`, the die is rolled before every step even without an event, and candidates are sorted. The same seed gives the same run.
-- **Main finding: our instances are fragile by design.** They have exact supply (built that way so the optimum can be checked by counting) and no spare lines, so most failures are fatal (I2: 8 of 10 seeds unsolvable at p = 0.1). That isn't a planner bug: the search *proves* there's no solution (`sin_solucion`, in ≤ 0.11 s). The scratch variants of I1 with a spare line or a spare thermal recover (extra 0 and 6), which shows that replanning works when the grid has redundancy. Message for the slide: *"replanning can only use the redundancy the grid has; with no spare blocks or lines, a failure is final."*
+- **Main finding: our instances are fragile by design.** They have exact supply (built that way so the optimum can be checked by counting) and no spare lines, so most failures are fatal (I2: 8 of 10 seeds unsolvable at p = 0.1). That isn't a planner bug: the search *proves* there's no solution (`sin_solucion`, in ≤ 0.08 s). The scratch variants of I1 with a spare line or a spare thermal recover (extra 0 and 6), which shows that replanning works when the grid has redundancy. Message for the slide: *"replanning can only use the redundancy the grid has; with no spare blocks or lines, a failure is final."*
 
 ### 9.8 Experiment E4 (failures)
 - **The question:** *"If things break during the plan, how often can we still finish, and at what price?"* We measure the % of runs solved, extra maneuvers, lost loads and replanning time, separately for line failures and plant trips, at three failure probabilities.
@@ -617,3 +623,125 @@ Points worth a slide or a prepared answer. Added as they come up during implemen
 - **Reading a long line in the pictures:** the dashed line S1–S2 in I1 can only be switched on once a customer at S1 is supplied (step 5, after hospital P1). That's the Ferranti rule, visible in the picture.
 - **Citations:** NetworkX (Hagberg, Schult & Swart, 2008), Matplotlib (Hunter, 2007).
 
+---
+
+## 10. Presentation kit
+
+Everything here uses numbers measured **after** Eloísa's `Cargada` change (2026-10-12). Facts from the assignment PDF (`Instrucciones practica 2.pdf`) are marked 📄.
+
+### 10.1 Practical constraints (📄)
+- **Presentation: Thursday 22/10, 18:00–18:15** (Eloísa + Milagros). **Delivery deadline: 18/10, 23:59** (code as .zip, slides as **PDF**, and the **generative-AI use declaration**). Late delivery: −20% of the grade per day. Missing AI declaration: **−1 point**. Slides can't be changed after the deadline.
+- **Talk: 9–11 minutes** for full marks on timing (8–9 or 11–12 → half; < 8 or > 12 → zero). Then **2 questions per person**, worth 3 of 10 points in total (0.5 each in the rubric).
+- **Required on the slides** (each one is graded in "structure"): motivation, problem definition/formalization, methodology (algorithms + tools), results **with critical analysis**, conclusions, and **each member's personal contribution** (balanced and explicit).
+- **Rubric weights to keep in mind:** problem complexity 0.65 and adequacy of the solution 0.35 (2.5 pts); code quality (1.75 pts: it must run without errors); slides 0.6 / delivery 0.4 (2.75 pts; inside "slides": critical analysis 0.3, visual support 0.3, structure 0.2, motivation 0.1, contribution 0.1); questions 3 pts.
+- **References are mandatory** for any reused library, figure or idea (NetworkX, Matplotlib, the textbook). Teamwork is graded: both must speak.
+
+### 10.2 Suggested slide outline (≈ 10 min)
+Proposed split; Eloísa's parts are in *italics* (she owns the domain, heuristics and E1–E3, E5–E6), adjust together.
+
+| # | Slide | ~min | Who | Content / figure |
+|---|---|---|---|---|
+| 1 | Title + motivation | 1 | *both* | Why a blackout restart: real, critical (hospitals first), naturally a **planning** problem (order of maneuvers matters, actions have preconditions). |
+| 2 | The domain in one picture | 1 | *Eloísa* | Pieces of section 0 (substation, line, plant, block, load, zone) + I1 drawing `figuras/i1_00.png`. |
+| 3 | Formalization | 1 | *Eloísa* | STRIPS-like: states = sets of atoms; actions with pre+/pre−/add/del; 2–3 example actions (`EnergizarLarga` with Ferranti, `ArrancarTermica`); goal; costs (1 per maneuver, 0 for `ExtenderAlcance`). |
+| 4 | Planner | 1 | Milagros | One forward search, 3 modes (UCS / A* / greedy) by changing only `f`; tie-break by lower h; goal test on expansion; reopen if better g. |
+| 5 | Heuristics | 1 | *Eloísa* | h0, hprec, hmax, hadd: what each counts, which are admissible. |
+| 6 | Instances + I1 step by step | 1.5 | Milagros | I1/I2/I3 table (sizes, optima 14/23/26, "optimum by counting"); 3–4 frames of I1 (`i1_00`, `i1_03`, `i1_05`, `i1_14`). |
+| 7 | E1 heuristics comparison | 1 | *Eloísa* | Her table/figure. |
+| 8 | Aggregation (E3) | 1 | Milagros (+ *Eloísa's E3 figure*) | "Name each block" vs "count blocks per zone"; same states up to block names; 20× fewer states on I2; I3: aggregated solves it in seconds, individual mostly doesn't. |
+| 9 | Scaling (E2) / G(n) | 0.5 | *Eloísa* (generator: Milagros) | Generator in one line; where optimal search stops (n = 8). |
+| 10 | Failures + replanning (E4) | 1.5 | Milagros | Loop "act → observe → replan"; `figuras/e4.png`; the 2 key numbers; honest limitations. |
+| 11 | Conclusions + critical analysis | 1 | *both* | 3–4 bullets (10.6). |
+| 12 | Who did what | 0.5 | *both* | Table of 10.7. |
+| 13 | References | – | – | 10.9. |
+
+Tips: one message per slide; read numbers from the slide, not from memory; rehearse with a timer (target 10:00).
+
+### 10.3 Story in 5 sentences (to open or close)
+1. After a total blackout the grid must be restarted **in the right order**: some plants start alone, others need energy to start, long lines need a load connected, hospitals go first.
+2. We model it as a **classical planning problem** and solve it with our own forward search (UCS, A*, greedy) and domain-independent heuristics.
+3. The main difficulty is **symmetry**: with named energy blocks, many states are "the same" in practice; counting blocks per zone (aggregation) removes it and cuts the search by 1–2 orders of magnitude without changing the optimum.
+4. Even so, the problem grows **exponentially with the number of zones**, so optimal planning stops at small grids; greedy search still finds plans, without guarantees.
+5. When things break during execution, the agent **replans** from what it observes; it recovers only if the grid has spare capacity, and plant failures are much harder than line failures.
+
+### 10.4 Numbers cheat sheet (all current)
+| What | Number | Where from |
+|---|---|---|
+| Optimal costs | **I1 14, I2 23, I3 26** (both versions; = counting bound) | sections 2–3 |
+| I1 frames | 15 pictures (initial + 14 maneuvers) | `figuras/i1_*.png` |
+| Reachable states, individual → aggregated | I1 1,321 → 62; I2 70,365 → 3,287 (×21); G(4) s0 24,399 → 403 (×61) | section 3 |
+| I2 UCS, individual → aggregated | 68,061 → 3,252 expanded (×21), 1.05 s → 0.05 s | section 3 |
+| I3 | aggregated UCS 26 in 1.8 s; individual: UCS and A*+hprec stop at 500k nodes, A*+hmax at 120 s; only A*+hadd finishes (81 s) | section 2 |
+| hmax/hadd per node vs hprec | ~15× slower per expanded node (I2 ind.: hprec 0.78 s / 50k nodes vs hmax 11.6 s / 50k) | section 3 |
+| Zones multiply the space | ×30–80 per extra zone (I3 design tests, old rule) | 9.6 |
+| Greedy is not optimal | greedy + hprec: I2 25 (opt. 23), I3 30 (opt. 26) | sections 2, 9.2 |
+| Optimal search limit | G(8): no optimal search finishes (300k–500k nodes); greedy finds 41 (bound 39) | sections 2–3 |
+| E4, with spares | cables survived 100 / 100 / 67 %, plants 60 / 20 / 7 % (p = 0.05 / 0.1 / 0.2) | 4b |
+| E4 replanning time | ≤ 1.6 s summed per run; I2 replans ~0.01–0.02 s | 4b |
+| E4 runtime | 180 runs in 443 s | 4b |
+
+### 10.5 Likely questions with short answers
+**Domain and model**
+- *Why is this a planning problem and not just a graph search on the grid?* Because what matters is the **order of maneuvers** with preconditions (a thermal needs energy to start, a long line needs a load), and resources (blocks) get used up. The state is the whole situation, not a node of the grid.
+- *What is the Ferranti effect / why can't a long line be switched on empty?* An unloaded long line raises the voltage at its far end; in the model, `EnergizarLarga` requires a load **currently supplied** at the origin (`Suministrada(k)` after the 2026-10-12 change).
+- *Why do thermal plants need a block from another plant?* Their own machinery ("auxiliaries") needs energy to start. That's what makes the order non-trivial: hydro first, then thermals.
+- *Why is `ExtenderAlcance` free (cost 0)?* It isn't a physical maneuver, it's bookkeeping ("if A reaches B and B reaches C, A reaches C"). Charging for it would distort the optimum.
+- *What does a "block" represent?* A unit of energy that one load needs. It abstracts real power flows (no voltages or flows are computed). Honest limitation: "the plan is a sequence of maneuvers, not an electrical simulation".
+
+**Search and heuristics**
+- *Why is A\* optimal here, and with which heuristics?* A* with an admissible h never overestimates, so the first goal expanded is optimal. h0, hprec and hmax are admissible; hadd is not.
+- *Why is hprec admissible?* Each action achieves at most one goal atom and cost-0 actions achieve none, so each missing goal atom needs at least one maneuver of cost 1. (Kept true on purpose: the goal uses `z1 < z2` for couplings.)
+- *Why does hadd find optimal plans if it isn't admissible?* On our instances it happens to; nothing guarantees it. It's faster in nodes but each evaluation is expensive.
+- *Why test the goal when expanding and not when generating?* With costs 0 and 1, the first goal generated might not be the cheapest; testing on expansion keeps UCS/A* optimal.
+- *What's the tie-break and does it break optimality?* Equal f → lower h first. It only reorders nodes with the same f, so A*'s guarantee holds. Effect on I1 in 9.1.
+- *Why are hmax/hadd slower in time even with fewer nodes?* They solve a relaxed problem (fixpoint over all actions) at every generated state.
+
+**Aggregation**
+- *Is the aggregated version the same problem?* Yes: we enumerated every reachable state of both and mapped individual states to counters; the sets are identical (I1, I2, G(4) × 3 seeds), so optima are identical.
+- *Why doesn't aggregation solve everything?* It removes symmetry (which block), not combinatorics (which order). Zones still interleave: each extra zone multiplies the space.
+- *How do you put numbers in a propositional model?* The number is part of the atom name (`Libres(N,2)`); "3 follows 2" is resolved when grounding, one action copy per value.
+
+**Replanning / E4**
+- *Why replan from scratch instead of repairing the plan?* The planner is fast on these sizes and A* gives the cheapest continuation from the real state; repair would need extra machinery without a clear gain.
+- *Why check the whole rest of the plan and not just the next action?* A broken line may be needed 10 steps later; finding out now avoids useless maneuvers.
+- *Why do almost all failures end unsolvable on I2?* I1–I3 have exact supply and one path per substation (on purpose, to check optima by counting). With spares (I2-reserva) cable failures are survived 100% at low probability.
+- *Why are extra maneuvers almost always 0?* Recovered failures are often free (twin line, same-price spare), and expensive failures become unsolvable and drop out of the average (selection bias). Said openly in the analysis.
+- *Is the comparison cables vs plants fair?* Partly: every cable has a twin, four plants share one spare. Plants are still worse because a hydro trip is always fatal (only self-starting plant of its zone).
+- *Why the individual version for replanning?* After a trip we must know which loads used that plant's blocks; counters forget it.
+
+**Code / tools**
+- *What did you reuse?* Only the Python standard library (heapq, collections, random, time, csv), NetworkX for the graph and Matplotlib for figures (cited). Planner and heuristics are our own.
+- *How are results reproducible?* Fixed seeds with private `random.Random(semilla)`; same seed → same grid / same failures. Every search has time and node limits.
+
+### 10.6 Critical analysis and conclusions (slide material)
+- ✅ **Correctness evidence:** every plan is checked with `validar_plan` independently of the search; optima equal the counting bound (14 / 23 / 26); the two versions are proven equivalent on their whole state space.
+- ✅ **Aggregation pays off:** ×20–60 fewer states with the same optimum; it's what makes I3 solvable optimally in seconds.
+- ⚠️ **Exponential wall:** optimal search stops around G(8) even aggregated; zones interleave. Greedy finds plans but above the optimum and without guarantees.
+- ⚠️ **Heuristics:** better-informed (hmax/hadd) ≠ faster: fewer nodes but much more time per node; on I1 hprec and hmax expand almost the same.
+- ⚠️ **Robustness depends on the grid, not on the planner:** with no spare capacity a failure is final (and the planner proves it quickly); with spares, line failures are almost always absorbed, plant failures much less.
+- ⚠️ **Model simplifications:** no real power flows/voltages; voltage stays after a plant trip; no cascades. Worth saying as future work.
+- 🔭 **Future work:** action index by precondition (faster successor generation), symmetry reduction across zones, plans as partial orders (parallel maneuvers, `programacion.py`), richer failure model.
+
+### 10.7 Personal contribution (for the "who did what" slide)
+From the README ownership table and this plan:
+- **Milagros:** planner (`planificador.py`: UCS/A*/greedy, tie-break, validation); instances (`instancias.py`: I1–I3 design and resizing, `validar`, generator G(n), `red_i2_reserva`); aggregated version (`dominio_agregado.py`, equivalence proof); replanning (`replanificacion.py`); experiment E4; visualisation (`visualizacion.py`, frames).
+- **Eloísa:** domain and grounding (`dominio.py`, `funciones_auxiliares.py`, incl. the `Cargada` → `Suministrada` fix); heuristics (`heuristicas.py`); experiments E1–E3 (and optional E5–E6) in `experimentos.py`.
+- **Both:** `main.py` (entry point), README.
+- Check with Eloísa that this split is exact before putting it on a slide; the rubric rewards a **balanced and explicit** split.
+
+### 10.8 Live-demo commands (optional, rehearse before)
+```
+python3 main.py --instancia I1 --algoritmo astar --heuristica hmax --individual   # 14-step plan
+python3 visualizacion.py                                                         # regenerates figuras/i1_00..14.png
+python3 experimentos.py E4                                                       # ~7.5 min: too long live, show the figure instead
+```
+A one-off failure demo (I1, plant T1 trips before step 11 → no solution; reproducible):
+```
+python3 -c "import dominio,instancias,heuristicas as h; from replanificacion import ejecutar_con_fallos as e; r=instancias.red_i1(); a,s,g=dominio.problema(r); print(e(r,a,s,g,h.hadd,'astar',prob_fallo=0,eventos_programados={11:('central','T1')},limite_tiempo=60,limite_nodos=300_000)['eventos'])"
+```
+
+### 10.9 Figures available and references
+- `figuras/i1_00.png` … `i1_14.png`: I1 plan step by step (individual plan, titles name the block used). Steps: 1 start H1, 2 activate bH1_1, 3 connect hospital P1, 4 activate bH1_2, 5 long line S1→S2 (allowed by P1), 6 start T1 with bH1_2, 7–10 activate T1's 4 blocks, 11–14 connect B1, B2, I1, I2. Good picks: 00 (all dark), 01 (H1 starts, S1 lit), 03 (hospital first), 05 (long line, Ferranti rule), 06 (thermal starts with a borrowed block), 14 (all green).
+- `figuras/e4.png`: E4, three panels (% solved, extra maneuvers, lost loads).
+- `dibujar_red` can draw any other state (I2, I3, a failed line in red) if a slide needs it.
+- References: Hagberg, Schult & Swart (2008), *Exploring network structure, dynamics, and function using NetworkX*; Hunter (2007), *Matplotlib: A 2D graphics environment*; Russell & Norvig, *Artificial Intelligence: A Modern Approach* (planning, heuristics, monitoring and replanning, ch. 10–11); course notes (Tema 4, state abstraction).
