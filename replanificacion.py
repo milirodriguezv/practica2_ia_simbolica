@@ -1,6 +1,4 @@
-"""Replanificación ante fallos (propuesta v2, secc. 8.3).
-
-Responsable: Milagros.
+"""Replanificación ante fallos 
 
 Ciclo: planificar -> ejecutar acción a acción -> monitorizar -> replanificar.
 

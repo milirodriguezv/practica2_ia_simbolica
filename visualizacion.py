@@ -1,6 +1,4 @@
-"""Dibujo de la red paso a paso (fotogramas para las diapositivas).
-
-Responsable: Milagros.
+"""Dibujo de la red paso a paso 
 
 Cada fotograma muestra un estado de la red:
     - Subestaciones: gris = sin tensión, amarillo = ConTension(s).
@@ -15,21 +13,13 @@ Solo se usan átomos que existen en las dos versiones del dominio
 (ConTension, EnMarcha, Operativa, Suministrada, Alcanza), así que sirve
 tanto para dominio.problema como para dominio_agregado.problema_agregado.
 
-Bibliotecas:
-    - Hagberg, A. A., Schult, D. A. y Swart, P. J. (2008). "Exploring
-      network structure, dynamics, and function using NetworkX". En
-      Proceedings of the 7th Python in Science Conference (SciPy 2008),
-      pp. 11-15.
-    - Hunter, J. D. (2007). "Matplotlib: A 2D graphics environment".
-      Computing in Science & Engineering, 9(3), pp. 90-95.
 """
 
 import os
 
 import matplotlib
 
-matplotlib.use("Agg")  # guarda imágenes sin abrir ventanas
-
+matplotlib.use("Agg")  
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.lines import Line2D

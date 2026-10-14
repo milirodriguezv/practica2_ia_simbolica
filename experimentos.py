@@ -1,7 +1,5 @@
 """Experimentos E1-E5: ejecutan las búsquedas y guardan las tablas.
 
-Responsable: Eloísa (E4: Milagros).
-
 Uso: python experimentos.py E1 [E2 ...]
 Las tablas van a resultados/ (CSV) y las gráficas a figuras/ (las dibuja
 figuras.py).
@@ -12,8 +10,6 @@ un recurso que se gasta, así que además de nodos y tiempo se miden los
 estados trampa y los estados sin salida (definidos en analisis.py) y los
 deslastres del plan: cuántas veces el plan devuelto deshace trabajo.
 
-Tiempos orientativos (portátil): E1, E3 y E5 unos 3 min cada uno, E2 unos
-15 min y E4 unos 8 min.
 """
 
 import csv
@@ -158,9 +154,7 @@ def _ejecutar(acciones, inicial, objetivo, configuracion, limite_tiempo):
     return resumen
 
 
-# ---------------------------------------------------------------------------
 # E1: qué heurística guía mejor cuando los recursos se gastan
-# ---------------------------------------------------------------------------
 
 E1_INSTANCIAS = ("I1", "I2", "I3")
 E1_LIMITE_TIEMPO = 180  # segundos por búsqueda
@@ -302,9 +296,7 @@ def e1():
     print(f"\nE1 terminado en {time.perf_counter() - inicio:.0f} s.")
 
 
-# ---------------------------------------------------------------------------
 # E2: hasta qué tamaño de red llega cada configuración
-# ---------------------------------------------------------------------------
 
 E2_TAMANOS = (2, 4, 6, 8, 10, 12, 14)  # subestaciones; una zona cada 4
 E2_SEMILLAS = 5  # redes por tamaño: semillas SEMILLA .. SEMILLA + 4
@@ -432,9 +424,7 @@ def e2():
     print(f"\nE2 terminado en {time.perf_counter() - inicio:.0f} s.")
 
 
-# ---------------------------------------------------------------------------
 # E3: cuánto aporta agregar los bloques indistinguibles
-# ---------------------------------------------------------------------------
 
 E3_INSTANCIAS = ("I1", "I2", "I3")
 E3_CONFIGURACION = "A* + hadd"  # la que resuelve I3 más rápido
@@ -568,7 +558,7 @@ def e3():
     print(f"\nE3 terminado en {time.perf_counter() - inicio:.0f} s.")
 
 
-# Parámetros de E4 (Milagros). Elegidos para que todo E4 tarde unos 8 min.
+# Parámetros de E4 
 E4_PROBABILIDADES = (0.05, 0.1, 0.2)  # probabilidad de fallo antes de cada paso
 E4_SEMILLAS = 15  # ejecuciones por configuración: semillas SEMILLA .. SEMILLA + 14
 E4_TIPOS = ("linea", "central")  # averías de línea frente a disparos de central
@@ -733,9 +723,8 @@ def e4():
     print(f"\nE4 terminado en {time.perf_counter() - inicio:.0f} s.")
 
 
-# ---------------------------------------------------------------------------
+
 # E5: dónde está lo difícil (bloques sobrantes)
-# ---------------------------------------------------------------------------
 
 E5_HOLGURAS = (-1, 0, 1, 2, 3, 4, 6)  # bloques sobrantes: oferta - demanda
 E5_SUBESTACIONES = 6  # tamaño de las redes generadas
