@@ -49,7 +49,7 @@ def averia_linea(estado, linea):
 def disparo_central(estado, central, red):
     """Disparo de una central: se para y no se puede volver a arrancar.
 
-    Efectos (semántica confirmada, PLAN secc. 8 Q4):
+    Efectos:
       (A) Borra EnMarcha(c) y Operativa(c), y Activado(b) y Libre(b) de cada
           bloque b de c. Por qué: la energía de la central desaparece y la
           avería impide rearrancarla.

@@ -1,6 +1,6 @@
 # Implementation plan: Milagros's parts
 
-**Status (2026-10-13): all of Milagros's parts are implemented, verified and on `main`** (planner, instances + `validar` + G(n), aggregated version, replanning, experiment E4, visualisation). Each part lists **what** was built, the **design decisions** (with a one-line "why" for the oral defense), and the **real measured results**.
+**Status (2026-10-14): all of Milagros's parts are implemented, verified and on `main`** (planner, instances + `validar` + G(n), aggregated version, replanning, experiment E4, visualisation). `main.py` rewritten (section 5c, not committed yet). Integration check with Eloísa's PR #3 (E1–E3, E5, `analisis.py`, `figuras.py`) passed (section 5d). Each part lists **what** was built, the **design decisions** (with a one-line "why" for the oral defense), and the **real measured results**.
 
 How to use this file for the presentation:
 - **[Section 10](#10-presentation-kit)** is the presentation kit: suggested slide outline, numbers cheat sheet, likely questions with answers, glossary, live-demo commands and the list of figures.
@@ -330,7 +330,7 @@ Same optimum everywhere both finish; the aggregated version expands **16–21× 
 | I2 | 7 | 6 | 51 |
 | I3 | 10 | 5 | 65 |
 
-**`main.py`:** `python3 main.py --instancia I2 --algoritmo astar --heuristica hprec` now runs aggregated by default: valid 23-step plan, 2,881 expanded, 0.04 s.
+**`main.py`:** `python3 main.py --instancia I2 --algoritmo astar --heuristica hprec` runs aggregated by default: valid 23-step plan, 2,881 expanded, 0.04 s (full CLI in section 5c).
 
 **I1 aggregated optimal plan (ucs, cost 14):** `ArrancarAutonomo(H1,S1)` → `ActivarBloque(H1,N,0,0)` → `ActivarBloque(H1,N,1,1)` → `ConectarPrioritaria(P1,S1,N,N,2)` → `EnergizarLarga(L12,S1,S2,N,P1)` → `ArrancarTermica(T1,S2,N,N,1)` → `ActivarBloque(T1,N,0,0)` … `(T1,N,3,3)` (4 steps) → `ConectarCarga(B1,S1,N,N,4)` → `ConectarCarga(B2,S1,N,N,3)` → `ConectarCarga(I1,S2,N,N,2)` → `ConectarCarga(I2,S2,N,N,1)`. Reading the numbers: `ActivarBloque(c,z,m,n)` = plant `c` had `m` activated, zone `z` had `n` free; `Conectar…(…,n)` = zone had `n` free before connecting.
 
@@ -431,7 +431,7 @@ I2, `prob_fallo = 0.1`, A*+hprec (fastest optimal config on individual I2, cheap
 - **Why twin lines and not lines closing a loop:** a loop line (S1–S3, S5–S6) multiplies the possible energizing orders, and A*+hprec didn't finish in 1M nodes. A parallel line creates no new states (the destination ends up lit either way), so the search doesn't grow.
 - **Why a 2-block thermal as the spare and not a spare block:** a spare block on a hydro or thermal plant makes the plan *cheaper* (optimum 20–21), so "extra maneuvers" would be measured against a different optimum. A 2-block thermal costs the same as using T1/T2 (start + 2 activations for 1 net block), so the optimum stays 23. It sits at S6 because the search grows least there (compared with S2/S3/S5).
 - **Why I3 and I1 are left out:** with individual blocks, the only optimal search that solves I3 is A*+hadd, in ~81 s per search, which is too slow to repeat for many seeds. I1 is a toy with no redundancy and adds nothing beyond I2.
-- **Factors:** failure type (lines only vs plants only, to compare them) × `prob_fallo` ∈ {0.05, 0.1, 0.2} × 15 seeds (`SEMILLA + i`). The whole E4 takes 443 s (~7.4 min, 180 runs).
+- **Factors:** failure type (lines only vs plants only, to compare them) × `prob_fallo` ∈ {0.05, 0.1, 0.2} × 15 seeds (`SEMILLA + i`). The whole E4 takes 473 s (~8 min, 180 runs; re-run on 2026-10-14 with the final code: same outcomes in every run, only times change).
 - **Paired comparison:** the same seed rolls the die the same way for both failure types, so failures land on the same steps.
 - **A* + hprec:** admissible, so every plan and replan is optimal and "extra" is measured against the minimum. It's the fastest optimal config on individual I2. Limits: 60 s / 300k nodes per search (never reached).
 
@@ -445,12 +445,12 @@ I2, `prob_fallo = 0.1`, A*+hprec (fastest optimal config on individual I2, cheap
 | I2 | plant | 0.05 | 0.80 | 20.0 | 80.0 | 0 | 0.33 | 0.80 | 0.02 |
 | I2 | plant | 0.1 | 0.87 | 13.3 | 86.7 | 0 | 0.33 | 0.87 | 0.02 |
 | I2 | plant | 0.2 | 0.93 | 6.7 | 93.3 | 0 | 0.13 | 0.93 | 0.02 |
-| I2-reserva | line | 0.05 | 1.47 | 100.0 | 0.0 | 0 | 0 | 0.20 | 0.16 |
+| I2-reserva | line | 0.05 | 1.47 | 100.0 | 0.0 | 0 | 0 | 0.20 | 0.17 |
 | I2-reserva | line | 0.1 | 2.80 | 100.0 | 0.0 | 0 | 0 | 0.27 | 0.39 |
-| I2-reserva | line | 0.2 | 4.40 | 66.7 | 33.3 | 0 | 0 | 1.07 | 1.58 |
+| I2-reserva | line | 0.2 | 4.40 | 66.7 | 33.3 | 0 | 0 | 1.07 | 1.70 |
 | I2-reserva | plant | 0.05 | 1.07 | 60.0 | 40.0 | 0.67 | 0.53 | 0.93 | 0.19 |
 | I2-reserva | plant | 0.1 | 1.33 | 20.0 | 80.0 | 0 | 0.53 | 1.13 | 0.11 |
-| I2-reserva | plant | 0.2 | 1.33 | 6.7 | 93.3 | 0 | 0.2 | 1.07 | 0.10 |
+| I2-reserva | plant | 0.2 | 1.33 | 6.7 | 93.3 | 0 | 0.2 | 1.07 | 0.11 |
 
 Checked by the main session: `validar` and optimum 23 of I2-reserva; individual runs re-executed by hand match the CSV (e.g. reserva/plant/p=0.05/seed 8: T1 trips at step 16, B2 lost, solved with +3; reserva/line/p=0.2/seed 1: L12b then L12 fail before use → `sin_solucion`).
 
@@ -508,6 +508,118 @@ Generate I1 frames (15 images: initial + 14 steps) and open a couple to check th
 
 ---
 
+## 5c. `main.py`: command-line entry point (✅ done 2026-10-14, not committed yet)
+
+### What
+One command to run any search and, optionally, draw the plan or simulate failures. Old flags keep their names (`--instancia`, `--algoritmo`, `--heuristica`, `--individual`, `--limite`). New:
+- `--instancia I2-reserva` (local dict `REDES_MAIN` in `main.py`; `instancias.REDES` is unchanged, so E1–E3 don't see it).
+- `--generada N [--margen M] [--semilla S]`: a G(N) network instead of a fixed instance.
+- `--nodos` (default 500,000) and `--limite` (default now 60 s): **both limits are always passed**, so a demo can't fill the 8 GB of RAM.
+- `--figuras PREFIJO`: saves one frame per step with `visualizacion.fotogramas`. matplotlib is imported only in that branch.
+- `--fallo TIPO:ELEMENTO@PASO` (repeatable), `--prob-fallo P`, `--tipos-fallo linea|central`: runs `replanificacion.ejecutar_con_fallos` instead of the plain search. `@PASO` = actions already executed (`@0` before the first, `@11` between 11 and 12).
+
+Output: header (instance, version, number of actions, algorithm + heuristic + limits, h of the initial state), numbered plan with each action's cost, `validar_plan` result, statistics one per line. Without a plan it explains why in words (`sin_solucion` vs a limit) and exits with status 1.
+
+### Design decisions (with the why)
+- **`main` builds the `Red` itself** (not `instancias.cargar`): the frames and the failures need the network, not only the actions.
+- **Failures switch to the individual version automatically**, with a one-line notice: a plant trip must know which loads used its blocks.
+- **`--tipos-fallo` added beyond the spec:** E4 runs each failure type separately. Without it, `--prob-fallo 0.05 --semilla 8` on I2-reserva gives E4's *line* run (L45 fails at step 16, extra 0), not the *plant* run.
+- Wrong input (bad `--fallo` format, unknown type, element not in the network, `--prob-fallo` outside [0, 1]) gives a clear argparse error.
+
+### Verification (real outputs, checked by the main session)
+| Command | Actions | Cost | Expanded | Result |
+|---|---|---|---|---|
+| `python3 main.py` (I1 aggregated, A*+hmax) | 102 | 14 | 54 | resuelto |
+| `--instancia I1 --heuristica hmax --individual` | 68 | 14 | 890 | resuelto |
+| `--instancia I2 --heuristica hprec` | 145 | 23 | 2,881 | resuelto |
+| `--instancia I3 --algoritmo ucs --heuristica h0` | 138 | 26 | 88,689 | resuelto (1.8 s) |
+| `--instancia I2-reserva --heuristica hprec --individual` | 164 | 23 | 147,846 | resuelto (3.7 s) |
+| `--generada 4 --heuristica hprec` | 90 | 16 | 314 | resuelto |
+| `--instancia I2 --nodos 10` | 145 | – | 10 | limite_nodos, exit 1 |
+| `--heuristica hadd --fallo central:T1@11` (I1) | 68 | 11 executed | – | sin_solucion: B1, B2 lost |
+| `--instancia I2-reserva --heuristica hprec --prob-fallo 0.05 --semilla 8 --tipos-fallo central` | 164 | 26 (+3) | – | resuelto: T1 trips at step 16, B2 lost (= E4 CSV) |
+
+`--figuras` saved 15 frames for I1 (test files deleted afterwards).
+
+## 5d. Integration check with Eloísa's experiments (2026-10-14)
+
+Eloísa's PR #3 (`58b873e`, merged as `d32d9ac`) added `analisis.py` (full state space, exact h*, "trap" and "dead-end" states), `figuras.py` (all plots, including E4's, moved out of `experimentos.py`), E1–E3 and E5, and the README experiments table. Checked:
+- **All 13 modules import**; every non-stub function is used. Stubs left: `heuristicas.hff`, `experimentos.e6` (`python3 experimentos.py E6` raises `NotImplementedError`), all of `programacion.py` (optional, not imported anywhere).
+- **Same numbers on both sides:** her CSVs match ours exactly in nodes and costs (e.g. aggregated A*+hprec: I1 47, I2 2,881, I3 76,865; reachable states I1 1,321 → 62, I2 70,365 → 3,287). Her times are ~2× ours (slower laptop).
+- **Internal consistency of her CSVs:** E2: the admissible configurations never disagree on the optimum, no non-admissible plan is below it, no `sin_solucion` with margin 1.2 (96 solved, 79 time limit). E5: holgura −1 is always `sin_solucion`, holgura ≥ 0 always solved, I1/I2 at holgura 0 give 14/23. Every plan in E1–E5 has `plan_valido = True`.
+- **My parts as she uses them:** `red_generada` + her `red_generada_con_holgura` give exact block counts (the generator rounds before `ceil`); `red_juguete(4)` has the same state space as I1; E4 code unchanged; replanning demo and `p = 0` sanity give the expected results; `python3 visualizacion.py` regenerates byte-identical frames.
+- ⚠️ **Machine-dependent result:** in her `e3_instancias.csv`, individual I3 with A*+hadd **hits the 120 s limit** (121k expanded). On our machine it finished in 81 s (and in 86 s, 176,113 expanded, when E3 was re-run in the clean-install test). Section 9.6 / the slides should say "individual I3 is at the edge: ~81 s here, over 120 s on a slower laptop".
+- Small things found here were fixed the same day (section 11): E4 re-run so `figuras/e4.png` is drawn by `figuras.figura_e4`; stale docstrings corrected.
+
+## 5e. Eloísa's experiments E1, E2, E3, E5: results for the slides (from her CSVs, PR #3)
+
+All on the **aggregated** version unless said otherwise. Numbers copied from `resultados/*.csv` (her laptop: times ≈ 2× ours, node counts identical). Two terms she introduced (`analisis.py`), worth one line on a slide:
+- **Trap state (estado trampa):** the goal is still reachable, but **only by undoing work** (`Deslastrar`), because a block was spent in the wrong place.
+- **Dead-end state (estado sin salida):** the goal is no longer reachable (blocks spent on hospitals, which can't be shed).
+- They are computed exactly: `analisis.py` enumerates the whole state space and runs Dijkstra **backwards** from the goal states to get the true cost h* of every state (with and without `Deslastrar`).
+
+### E1: which heuristic guides best? (`figuras/e1.png`)
+Search (A* with h0 / hprec / hmax / hadd, greedy + hadd; 180 s limit):
+| Instance (optimum) | h0 | hprec | hmax | hadd | greedy+hadd |
+|---|---|---|---|---|---|
+| I1 (14) | 61 | 47 | 54 | 33 | 26 |
+| I2 (23) | 3,252 | 2,881 | 2,868 | 1,694 | 94 |
+| I3 (26) | 88,689 | 76,865 | 52,841 | 17,046 | 164 |
+(expanded nodes; **every configuration found the optimum**, 0 extra maneuvers, 0 sheddings.) Time per node: h0/hprec ≈ 0.04 ms, hmax ≈ 0.6 ms, hadd ≈ 0.75–0.95 ms. So on I3, hmax takes 34 s and hprec 3.2 s (her laptop).
+
+Accuracy h/h* over every state (exact h*):
+| Instance | states | trap | dead-end | hprec | hmax | hadd | hadd overestimates in | dead ends seen as ∞ (hprec / hmax / hadd) |
+|---|---|---|---|---|---|---|---|---|
+| I1 | 62 | 6 | 0 | 0.64 | 0.40 | 0.89 | 3.3 % | – |
+| I2 | 3,287 | 305 | 38 | 0.54 | 0.37 | 0.83 | 10.4 % | 0 / 100 / 100 % |
+| I3 | 89,353 | 9,257 | 29,527 | 0.65 | 0.46 | 1.00 | 26.3 % | 0 / 100 / 100 % |
+On trap states every heuristic is less accurate (I3: hprec 0.44, hmax 0.31), except hadd, which goes over (1.06).
+
+Reading:
+- **Better-informed = fewer nodes, not less time.** hadd expands 5× fewer nodes than hprec on I3 but takes 5× longer.
+- **The relaxation is blind to blocks being used up.** It ignores delete lists, so it doesn't see that a block is already spent. That's why every heuristic underestimates most on trap states.
+- **hmax/hadd detect every dead end (h = ∞), hprec none.** With no free block left and none that can be produced, even the relaxed problem can't reach the goal. hprec only counts missing goals, so it never returns ∞.
+- **hadd is not admissible and it shows:** it overestimates in 26 % of I3's states. It still found the optimum on I1–I3, by luck, not by guarantee.
+
+### E2: how far does each configuration scale? (`figuras/e2.png`)
+G(n), n = 2…14 substations (one zone every 4), margin 1.2, 5 networks per size, **10 s** per search.
+| n (zones) | A*+h0 | A*+hprec | A*+hmax | A*+hadd | greedy+hadd |
+|---|---|---|---|---|---|
+| 2–6 (1) | 100 % | 100 % | 100 % | 100 % | 100 % |
+| 8 (2) | 40 % | 40 % | **0 %** | 40 % | 100 % |
+| 10 (2) | 0 % | 0 % | 0 % | 0 % | 60 % |
+| 12 (3) | 0 % | 0 % | 0 % | 0 % | 80 % |
+| 14 (3) | 0 % | 0 % | 0 % | 0 % | 60 % |
+- **The wall is the second zone** (n = 8), the same as in section 2 with other limits. Median time of the solved runs grows about ×30 every 2 substations from n = 4 (A*+hprec: 0.001 → 0.04 → 1.2 s).
+- **Proposal hypothesis "h0 and hprec stop first": not supported.** hmax stops first, because it is the most expensive per node. With a time limit, cost per node matters as much as node count.
+- Greedy + hadd keeps finding plans up to n = 14. Its plans are optimal when the optimum is known (n ≤ 8), except 0.4 extra maneuvers on average at n = 6.
+
+### E3: how much does aggregation give? (`figuras/e3.png`)
+| Instance | States, individual → aggregated | A*+hadd expanded, individual → aggregated |
+|---|---|---|
+| I1 | 1,321 → 62 (÷21) | 281 → 33 (÷9) |
+| I2 | 70,365 → 3,287 (÷21) | 27,486 → 1,694 (÷16) |
+| I3 | > 300,000 (cap) → 89,353 | not solved in 120 s (121,085 exp.) → 17,046 (solved, 26) |
+Toy family (I1 with k blocks in the thermal, same structure): reduction ×1.8, 2.5, 5.9, 21, 90, **429** for k = 1…6.
+- **The gain grows with the number of interchangeable blocks**, roughly like the number of ways to assign k blocks to k loads (k!). That is exactly the symmetry the counters remove.
+- Same plan cost in both versions wherever both finish.
+- ⚠️ I3 individual + A*+hadd: 81 s on our laptop, > 120 s on hers. Say "at the edge" (section 5d).
+
+### E5: where is it hard? Spare blocks (`figuras/e5.png`)
+Holgura (spare blocks = supply − demand) from −1 to +6, on I1, I2 and 8 G(6) networks; A*+hprec, A*+hadd, greedy+hadd.
+| | −1 | 0 (exact) | +1 | +2 | +6 |
+|---|---|---|---|---|---|
+| Trap states, I1 / I2 / G(6) | – | 9.7 / 9.3 / 0.7 % | 5.0 / 3.3 / 0.4 % | 4.1 / 0.9 / 0.2 % | 0 / 0.06 / 0.01 % |
+| Optimal cost, I1 / I2 | unsolvable | 14 / 23 | 14 / 21 | 14 / 19 | 12 / 19 |
+| A*+hadd expanded, I2 | 123 | 1,694 | 1,425 | 293 | 354 |
+| Reachable states, I2 | 258 | 3,287 | 8,800 | 17,898 | 96,418 |
+- **Exact supply is where traps are**: about 1 state in 10 on I1/I2, almost none with 2+ spare blocks.
+- **More states ≠ harder.** I2's space grows ×30 from 0 to +6 spare blocks, but A*+hadd expands ×5 fewer nodes. Spare blocks make many orders equally good.
+- **Hypothesis "difficulty peaks at exact supply, like SAT's critical point": supported on I2 (nodes peak at 0/+1), not on I1** (nodes grow from 33 to 82 with the space). On G(6) the hardest case is −1.
+- **Proving "no solution" means exhausting the space:** with −1, A*+hprec expands *every* reachable state (I2: 258 = 258). The relaxation can't see the shortage. hadd prunes dead ends (∞) and expands fewer (123).
+- **Spare blocks make plans cheaper** (I2: 23 → 21 → 19), because a thermal start and its activations can be skipped. That's also why I2-reserva's spare is a whole 2-block thermal (section 4b).
+- Greedy + hadd falls into traps sometimes: on G(6) with exact supply it sheds 0.12 loads per plan on average and pays 0.25 extra maneuvers.
+
 ## 6. Order of work and checkpoints
 
 | # | Part | Depends on | Checkpoint (real numbers reported to you) | Status |
@@ -519,6 +631,7 @@ Generate I1 frames (15 images: initial + 14 steps) and open a couple to check th
 | 5 | replanning | 1, 2 | p=0 sanity; I2 results with seeds | ✅ done (`replanificacion.py`; I1–I3 have no redundancy, see finding) |
 | 5b | E4 (failures experiment) | 5 | I2 / I2-reserva table + figure | ✅ done (`e4()`, `red_i2_reserva`) |
 | 6 | visualisation | 2 | I1 frames saved | ✅ done (15 frames `figuras/i1_*.png`) |
+| 7 | integration check + `main.py` | all | modules fit; CLI reproduces every optimum and the E4 demo | ✅ done (sections 5c, 5d; `main.py` not committed yet) |
 
 **Summary of optimal costs:** I1 = 14, I2 = 23, I3 = 26 (all equal to the counting bound; same in both versions).
 
@@ -623,6 +736,13 @@ Points worth a slide or a prepared answer. Added as they come up during implemen
 - **Reading a long line in the pictures:** the dashed line S1–S2 in I1 can only be switched on once a customer at S1 is supplied (step 5, after hospital P1). That's the Ferranti rule, visible in the picture.
 - **Citations:** NetworkX (Hagberg, Schult & Swart, 2008), Matplotlib (Hunter, 2007).
 
+### 9.10 `main.py` and the integration check
+- **What `main.py` is for:** the single command to show the planner live. It reproduces every number on the slides (14 / 23 / 26) and the failure demo, and it can draw the plan.
+- **Why it always passes a node limit:** the search keeps every state in memory. A time limit alone can overshoot (it's only checked between expansions), so a node limit protects the 8 GB machine.
+- **Why failures force the individual version:** same reason as in replanning (9.7). The CLI says it on screen, so nobody is surprised.
+- **Integration check, one sentence:** *"Both halves were run together: Eloísa's experiments reproduce exactly the node counts and optima of my planner and instances, and every plan in every CSV passes the independent validator."*
+- **Possible question: "is I3 really unsolvable with individual blocks?"** Not unsolvable: it's at the edge. A*+hadd takes ~81 s on one laptop and goes over the 120 s limit on the other. The point is the ×10–20 gap with the aggregated version, not the exact time.
+
 ---
 
 ## 10. Presentation kit
@@ -647,9 +767,9 @@ Proposed split; Eloísa's parts are in *italics* (she owns the domain, heuristic
 | 4 | Planner | 1 | Milagros | One forward search, 3 modes (UCS / A* / greedy) by changing only `f`; tie-break by lower h; goal test on expansion; reopen if better g. |
 | 5 | Heuristics | 1 | *Eloísa* | h0, hprec, hmax, hadd: what each counts, which are admissible. |
 | 6 | Instances + I1 step by step | 1.5 | Milagros | I1/I2/I3 table (sizes, optima 14/23/26, "optimum by counting"); 3–4 frames of I1 (`i1_00`, `i1_03`, `i1_05`, `i1_14`). |
-| 7 | E1 heuristics comparison | 1 | *Eloísa* | Her table/figure. |
-| 8 | Aggregation (E3) | 1 | Milagros (+ *Eloísa's E3 figure*) | "Name each block" vs "count blocks per zone"; same states up to block names; 20× fewer states on I2; I3: aggregated solves it in seconds, individual mostly doesn't. |
-| 9 | Scaling (E2) / G(n) | 0.5 | *Eloísa* (generator: Milagros) | Generator in one line; where optimal search stops (n = 8). |
+| 7 | E1 heuristics comparison | 1 | *Eloísa* | `figuras/e1.png`. Fewer nodes ≠ less time (hadd 5× fewer nodes, 5× slower on I3); relaxation blind to used-up blocks (accuracy drops on trap states); hmax/hadd spot all dead ends (5e). |
+| 8 | Aggregation (E3) | 1 | Milagros (+ *Eloísa's E3 figure*) | `figuras/e3.png`. "Name each block" vs "count blocks per zone"; proven same states up to block names; ÷21 states on I1/I2; toy family ÷429 at k = 6; I3 individual at the edge (5d, 5e). |
+| 9 | Scaling (E2) + where it's hard (E5) | 1 | *Eloísa* (generator: Milagros) | `figuras/e2.png`: wall at the 2nd zone (n = 8), hmax first to fail. `figuras/e5.png`: traps ~10 % at exact supply, ~0 with 2 spare blocks; more states ≠ harder. |
 | 10 | Failures + replanning (E4) | 1.5 | Milagros | Loop "act → observe → replan"; `figuras/e4.png`; the 2 key numbers; honest limitations. |
 | 11 | Conclusions + critical analysis | 1 | *both* | 3–4 bullets (10.6). |
 | 12 | Who did what | 0.5 | *both* | Table of 10.7. |
@@ -671,14 +791,21 @@ Tips: one message per slide; read numbers from the slide, not from memory; rehea
 | I1 frames | 15 pictures (initial + 14 maneuvers) | `figuras/i1_*.png` |
 | Reachable states, individual → aggregated | I1 1,321 → 62; I2 70,365 → 3,287 (×21); G(4) s0 24,399 → 403 (×61) | section 3 |
 | I2 UCS, individual → aggregated | 68,061 → 3,252 expanded (×21), 1.05 s → 0.05 s | section 3 |
-| I3 | aggregated UCS 26 in 1.8 s; individual: UCS and A*+hprec stop at 500k nodes, A*+hmax at 120 s; only A*+hadd finishes (81 s) | section 2 |
+| I3 | aggregated UCS 26 in 1.8 s; individual: UCS and A*+hprec stop at 500k nodes, A*+hmax at 120 s; only A*+hadd finishes (81 s here; over 120 s on Eloísa's laptop) | sections 2, 5d |
 | hmax/hadd per node vs hprec | ~15× slower per expanded node (I2 ind.: hprec 0.78 s / 50k nodes vs hmax 11.6 s / 50k) | section 3 |
 | Zones multiply the space | ×30–80 per extra zone (I3 design tests, old rule) | 9.6 |
 | Greedy is not optimal | greedy + hprec: I2 25 (opt. 23), I3 30 (opt. 26) | sections 2, 9.2 |
 | Optimal search limit | G(8): no optimal search finishes (300k–500k nodes); greedy finds 41 (bound 39) | sections 2–3 |
 | E4, with spares | cables survived 100 / 100 / 67 %, plants 60 / 20 / 7 % (p = 0.05 / 0.1 / 0.2) | 4b |
-| E4 replanning time | ≤ 1.6 s summed per run; I2 replans ~0.01–0.02 s | 4b |
-| E4 runtime | 180 runs in 443 s | 4b |
+| E4 replanning time | ≤ 1.7 s summed per run; I2 replans ~0.01–0.02 s | 4b |
+| E4 runtime | 180 runs in 473 s (~8 min) | 4b |
+| E1 time per node | h0/hprec ≈ 0.04 ms, hmax ≈ 0.6 ms, hadd ≈ 0.75–0.95 ms | 5e |
+| E1 accuracy h/h* (I3) | hprec 0.65, hmax 0.46, hadd 1.00 (overestimates in 26 % of states); on trap states 0.44 / 0.31 / 1.06 | 5e |
+| E1 dead ends detected (h = ∞) | hmax and hadd 100 %, hprec 0 % | 5e |
+| Trap / dead-end states | I2: 305 / 38 of 3,287; I3: 9,257 / 29,527 of 89,353 | 5e |
+| E2 wall | all configs 100 % up to n = 6 (1 zone); n = 8 (2 zones): optimal 40 % (hmax 0 %), greedy 100 %; n ≥ 10: only greedy (60–80 %) | 5e |
+| E3 toy family | state reduction ×1.8 → ×429 for k = 1 → 6 interchangeable blocks | 5e |
+| E5 | traps ≈ 10 % at exact supply → ≈ 0 with +2; I2 optimum 23 → 21 → 19 with +1 / +2 spare blocks | 5e |
 
 ### 10.5 Likely questions with short answers
 **Domain and model**
@@ -695,6 +822,14 @@ Tips: one message per slide; read numbers from the slide, not from memory; rehea
 - *Why test the goal when expanding and not when generating?* With costs 0 and 1, the first goal generated might not be the cheapest; testing on expansion keeps UCS/A* optimal.
 - *What's the tie-break and does it break optimality?* Equal f → lower h first. It only reorders nodes with the same f, so A*'s guarantee holds. Effect on I1 in 9.1.
 - *Why are hmax/hadd slower in time even with fewer nodes?* They solve a relaxed problem (fixpoint over all actions) at every generated state.
+
+**Experiments E1/E2/E5 (Eloísa's, but either of us may be asked)**
+- *What is a trap state?* The goal is still reachable, but only by undoing work (shedding a load) because a block was spent in the wrong place. A dead end is a state where it's no longer reachable at all (blocks spent on hospitals, which can't be shed).
+- *How do you know the real cost h\* of every state?* `analisis.py` enumerates all reachable states (they fit in memory for I1–I3 aggregated) and runs Dijkstra backwards from the goal states.
+- *Why are the heuristics worst on trap states?* They ignore delete lists, so in the relaxed problem a block is never used up. They can't see that the block is gone.
+- *Why does hmax fail first in E2 if it's admissible and informed?* The limit is in seconds: hmax is ~15× more expensive per node than hprec, and it doesn't save enough nodes to pay for it.
+- *Was the SAT-like "peak at exact supply" confirmed?* Partly. Trap states are concentrated at exact supply, and I2's search peaks there. I1 doesn't, and with spare blocks the space grows but the search gets easier.
+- *Why does proving "no solution" cost so much?* The relaxation doesn't see the shortage of blocks, so A* must exhaust every reachable state.
 
 **Aggregation**
 - *Is the aggregated version the same problem?* Yes: we enumerated every reachable state of both and mapped individual states to counters; the sets are identical (I1, I2, G(4) × 3 seeds), so optima are identical.
@@ -726,22 +861,47 @@ Tips: one message per slide; read numbers from the slide, not from memory; rehea
 From the README ownership table and this plan:
 - **Milagros:** planner (`planificador.py`: UCS/A*/greedy, tie-break, validation); instances (`instancias.py`: I1–I3 design and resizing, `validar`, generator G(n), `red_i2_reserva`); aggregated version (`dominio_agregado.py`, equivalence proof); replanning (`replanificacion.py`); experiment E4; visualisation (`visualizacion.py`, frames).
 - **Eloísa:** domain and grounding (`dominio.py`, `funciones_auxiliares.py`, incl. the `Cargada` → `Suministrada` fix); heuristics (`heuristicas.py`); experiments E1–E3 (and optional E5–E6) in `experimentos.py`.
-- **Both:** `main.py` (entry point), README.
+- **Both:** `main.py` (entry point; full CLI with limits, frames and failure demo written by Milagros on 2026-10-14), README.
+- **Eloísa (added in PR #3):** `analisis.py` (exact state space, trap / dead-end states), `figuras.py` (all experiment plots), experiments E1, E2, E3, E5 (section 5e).
 - Check with Eloísa that this split is exact before putting it on a slide; the rubric rewards a **balanced and explicit** split.
 
 ### 10.8 Live-demo commands (optional, rehearse before)
 ```
-python3 main.py --instancia I1 --algoritmo astar --heuristica hmax --individual   # 14-step plan
-python3 visualizacion.py                                                         # regenerates figuras/i1_00..14.png
-python3 experimentos.py E4                                                       # ~7.5 min: too long live, show the figure instead
-```
-A one-off failure demo (I1, plant T1 trips before step 11 → no solution; reproducible):
-```
-python3 -c "import dominio,instancias,heuristicas as h; from replanificacion import ejecutar_con_fallos as e; r=instancias.red_i1(); a,s,g=dominio.problema(r); print(e(r,a,s,g,h.hadd,'astar',prob_fallo=0,eventos_programados={11:('central','T1')},limite_tiempo=60,limite_nodos=300_000)['eventos'])"
+python3 main.py --instancia I1 --algoritmo astar --heuristica hmax --individual   # 14-step plan, 890 expanded
+python3 main.py --instancia I3 --algoritmo ucs --heuristica h0                   # aggregated I3: 26 in ~2 s
+python3 main.py --instancia I1 --individual --figuras i1                         # regenerates figuras/i1_00..14.png
+python3 main.py --instancia I1 --heuristica hadd --fallo central:T1@11           # T1 trips → sin_solucion, B1, B2 lost
+python3 main.py --instancia I2-reserva --heuristica hprec --prob-fallo 0.05 --semilla 8 --tipos-fallo central   # recovers with +3
+python3 experimentos.py E4                                                       # ~8 min: too long live, show the figure instead
 ```
 
 ### 10.9 Figures available and references
 - `figuras/i1_00.png` … `i1_14.png`: I1 plan step by step (individual plan, titles name the block used). Steps: 1 start H1, 2 activate bH1_1, 3 connect hospital P1, 4 activate bH1_2, 5 long line S1→S2 (allowed by P1), 6 start T1 with bH1_2, 7–10 activate T1's 4 blocks, 11–14 connect B1, B2, I1, I2. Good picks: 00 (all dark), 01 (H1 starts, S1 lit), 03 (hospital first), 05 (long line, Ferranti rule), 06 (thermal starts with a borrowed block), 14 (all green).
+- `figuras/e1.png`: E1, three panels (expanded nodes and time per configuration on I1–I3, log scale; accuracy h/h* on I3, all states vs trap states).
+- `figuras/e2.png`: E2, % of G(n) solved in 10 s and median time vs n (with the number of zones under each n).
+- `figuras/e3.png`: E3, reachable states and A*+hadd nodes individual vs aggregated (÷ factors), and the toy family k = 1…6.
 - `figuras/e4.png`: E4, three panels (% solved, extra maneuvers, lost loads).
+- `figuras/e5.png`: E5, % trap states, maneuvers saved, and A*+hadd nodes vs spare blocks.
 - `dibujar_red` can draw any other state (I2, I3, a failed line in red) if a slide needs it.
 - References: Hagberg, Schult & Swart (2008), *Exploring network structure, dynamics, and function using NetworkX*; Hunter (2007), *Matplotlib: A 2D graphics environment*; Russell & Norvig, *Artificial Intelligence: A Modern Approach* (planning, heuristics, monitoring and replanning, ch. 10–11); course notes (Tema 4, state abstraction).
+
+---
+
+## 11. Delivery checklist (status 2026-10-14; deadline 18/10 23:59)
+
+Correctness is verified (sections 5d, 5e). Decisions taken by Milagros on 2026-10-14 are in the status column.
+
+| # | Item | Status |
+|---|---|---|
+| 1 | Unfinished stubs: `programacion.py` (Milagros), `heuristicas.hff`, `experimentos.e6` (Eloísa) | **open**: Milagros decides on `programacion.py` (E6 depends on it) |
+| 2 | README matches the code: `dele`, `dominio_agregado.py`, `I2-reserva`, every `main.py` option, `visualizacion.py`, macOS/Linux venv, references | ✅ done |
+| 3 | Generative-AI use declaration | Milagros writes it separately (README points to it) |
+| 4 | Commit and push to `main` when everything is done | pending |
+| 5 | E4 re-run with the current code (CSV + figure drawn by `figuras.figura_e4`): identical outcomes, 473 s | ✅ done |
+| 6 | `e2_resumen.csv` / `e5_resumen.csv`: same data as the current code (only float rounding differs) | ✅ kept |
+| 7 | Docstrings complete and concise (`Args:` / `Returns:`), stale content removed: `cargar`, `planificador` header, `e4()` (97 s → "más de 80 s"), `dominio` header (`del` → `dele`), `Red` attributes, nested `total()`, `experimentos` header (E1-E5), references to this plan removed from code | ✅ done |
+| 8 | Delivery zip | not a concern |
+| 9 | Clean-install test: fresh venv (Python 3.13.5, matplotlib 3.11.2, networkx 3.7) with only the tracked files; every README example, `visualizacion.py` and `experimentos.py E3` run without errors and reproduce the committed numbers | ✅ done |
+| 10 | Old branches | not a concern |
+| 11 | `../CLAUDE.md` updated | ✅ done |
+| 12 | Check the "who did what" list (10.7) with Eloísa | pending |

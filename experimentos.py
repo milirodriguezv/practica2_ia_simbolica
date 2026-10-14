@@ -1,4 +1,4 @@
-"""Experimentos E1-E6: ejecutan las búsquedas y guardan las tablas.
+"""Experimentos E1-E5: ejecutan las búsquedas y guardan las tablas.
 
 Responsable: Eloísa (E4: Milagros).
 
@@ -13,7 +13,7 @@ estados trampa y los estados sin salida (definidos en analisis.py) y los
 deslastres del plan: cuántas veces el plan devuelto deshace trabajo.
 
 Tiempos orientativos (portátil): E1, E3 y E5 unos 3 min cada uno, E2 unos
-15 min y E4 unos 10 min.
+15 min y E4 unos 8 min.
 """
 
 import csv
@@ -65,6 +65,7 @@ def factor_ramificacion_efectivo(nodos, profundidad):
         return None
 
     def total(b):
+        """Nodos de un árbol uniforme con factor b: 1 + b + ... + b^profundidad."""
         return sum(b**i for i in range(profundidad + 1))
 
     bajo, alto = 0.0, float(max(2, nodos))
@@ -567,7 +568,7 @@ def e3():
     print(f"\nE3 terminado en {time.perf_counter() - inicio:.0f} s.")
 
 
-# Parámetros de E4 (Milagros). Elegidos para que todo E4 tarde unos 10 min.
+# Parámetros de E4 (Milagros). Elegidos para que todo E4 tarde unos 8 min.
 E4_PROBABILIDADES = (0.05, 0.1, 0.2)  # probabilidad de fallo antes de cada paso
 E4_SEMILLAS = 15  # ejecuciones por configuración: semillas SEMILLA .. SEMILLA + 14
 E4_TIPOS = ("linea", "central")  # averías de línea frente a disparos de central
@@ -678,8 +679,8 @@ def e4():
           todo fallo es definitivo; I2-reserva añade líneas dobles y una
           térmica de reserva para que se puedan medir recuperaciones. I3 se
           deja fuera: con bloques individuales solo A* + hadd la resuelve,
-          en unos 97 s por búsqueda, demasiado para repetirla con muchas
-          semillas (PLAN secc. 9.6). I1 tampoco aporta: es de juguete y sin
+          y tarda más de 80 s por búsqueda, demasiado para repetirla con
+          muchas semillas. I1 tampoco aporta: es de juguete y sin
           redundancia, como I2.
         - Factores: tipo de fallo (solo líneas o solo centrales, para
           compararlos por separado) y probabilidad de fallo antes de cada
@@ -690,7 +691,7 @@ def e4():
         - Planificador: A* con hprec. Es admisible, así que el plan inicial
           y cada replanificación son óptimos y las maniobras extra se miden
           contra el mínimo; y es la configuración óptima más rápida con
-          bloques individuales en I2 (PLAN secc. 2).
+          bloques individuales en I2.
         - Versión individual (dominio.problema): al disparar una central hay
           que saber qué cargas usaban sus bloques.
         - Límites por búsqueda: E4_LIMITE_TIEMPO s y E4_LIMITE_NODOS nodos.

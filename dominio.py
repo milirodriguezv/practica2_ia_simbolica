@@ -2,8 +2,9 @@
 
 Convenciones:
     - Un estado es un frozenset de cadenas, p. ej. 'ConTension(S1)'.
-    - Una acción es una tupla (nombre, coste, pre_pos, pre_neg, add, del).
-    - Resultado(s, a) = (s - del) | add.
+    - Una acción es una tupla (nombre, coste, pre_pos, pre_neg, add, dele);
+      dele es la lista de eliminación (del es palabra reservada de Python).
+    - Resultado(s, a) = (s - dele) | add.
     - Los predicados estáticos (Termica, Conecta, Linea, Zona, CargaEn...) se
       comprueban al instanciar y no aparecen ni en los estados ni en las
       precondiciones.
@@ -66,16 +67,14 @@ class Red:
 
     Attributes:
         zonas (list[str]): Zonas eléctricas, que se reponen como islas.
-        subestaciones (dict[str, str]): Subestación -> zona, nudo de la red de transporte.
+        subestaciones (dict[str, str]): Subestación -> zona.
         lineas (dict[str, tuple]): Línea -> (s1, s2, 'corta' | 'larga'), entre
             dos subestaciones de la misma zona.
         centrales (dict[str, tuple]): Central -> (subestación,
-            'autonomo' | 'termica', número de bloques).
-             Pueden ser hidráulica (arranque autónomo) o
-             térmica (arranque con bloque en marcha)
+            'autonomo' | 'termica', número de bloques). Las autónomas
+            (hidráulicas) arrancan solas; las térmicas necesitan un bloque.
         cargas (dict[str, tuple]): Carga -> (subestación,
             'prioritaria' | 'normal').
-            Consumo o tramo de consumo de una subestación (prioritaria o normal)
         interconexiones (list[tuple]): Pares (s1, s2) de subestaciones de zonas
             distintas donde se pueden acoplar.
     """

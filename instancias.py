@@ -554,7 +554,16 @@ REDES = {"I1": red_i1, "I2": red_i2, "I3": red_i3}
 
 
 def cargar(nombre, agregada=True):
-    """Devuelve (acciones, estado_inicial, objetivo) de la instancia pedida."""
+    """Construye el problema de una de las instancias de REDES.
+
+    Args:
+        nombre (str): Clave de REDES ("I1", "I2" o "I3").
+        agregada (bool): True para la versión agregada (contadores por zona),
+            False para bloques individuales.
+
+    Returns:
+        tuple: (acciones, estado_inicial, objetivo).
+    """
     red = REDES[nombre]()
     return (
         dominio_agregado.problema_agregado(red) if agregada else dominio.problema(red)

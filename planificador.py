@@ -1,4 +1,5 @@
-"""Planificador de búsqueda hacia delante 
+"""Planificador de búsqueda hacia delante.
+
 Búsqueda en grafo con conjunto de cerrados. Un único algoritmo sirve para los
 tres modos; solo cambia la prioridad f con la que se ordena la lista abierta:
 
