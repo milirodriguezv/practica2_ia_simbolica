@@ -1,0 +1,7 @@
+instancia,version,acciones,estados_alcanzables,resultado,coste,longitud,deslastres,expandidos,generados,tiempo,plan_valido
+I1,individual,68,1321,resuelto,14,14,0,281,1595,0.128,True
+I1,agregada,102,62,resuelto,14,14,0,33,119,0.019,True
+I2,individual,117,70365,resuelto,23,23,0,27486,146768,18.901,True
+I2,agregada,145,3287,resuelto,23,23,0,1694,8001,1.256,True
+I3,individual,121,,limite_tiempo,,,,121085,986237,120.0,
+I3,agregada,138,89353,resuelto,26,26,0,17046,134286,16.067,True
