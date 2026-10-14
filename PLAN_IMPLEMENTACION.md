@@ -544,7 +544,7 @@ Output: header (instance, version, number of actions, algorithm + heuristic + li
 ## 5d. Integration check with Eloísa's experiments (2026-10-14)
 
 Eloísa's PR #3 (`58b873e`, merged as `d32d9ac`) added `analisis.py` (full state space, exact h*, "trap" and "dead-end" states), `figuras.py` (all plots, including E4's, moved out of `experimentos.py`), E1–E3 and E5, and the README experiments table. Checked:
-- **All 13 modules import**; every non-stub function is used. Stubs left: `heuristicas.hff`, `experimentos.e6` (`python3 experimentos.py E6` raises `NotImplementedError`), all of `programacion.py` (optional, not imported anywhere).
+- **All 13 modules import**; every non-stub function is used. The three optional stubs found here (`heuristicas.hff`, `experimentos.e6`, `programacion.py`) were deleted on 2026-10-14 (section 11).
 - **Same numbers on both sides:** her CSVs match ours exactly in nodes and costs (e.g. aggregated A*+hprec: I1 47, I2 2,881, I3 76,865; reachable states I1 1,321 → 62, I2 70,365 → 3,287). Her times are ~2× ours (slower laptop).
 - **Internal consistency of her CSVs:** E2: the admissible configurations never disagree on the optimum, no non-admissible plan is below it, no `sin_solucion` with margin 1.2 (96 solved, 79 time limit). E5: holgura −1 is always `sin_solucion`, holgura ≥ 0 always solved, I1/I2 at holgura 0 give 14/23. Every plan in E1–E5 has `plan_valido = True`.
 - **My parts as she uses them:** `red_generada` + her `red_generada_con_holgura` give exact block counts (the generator rounds before `ceil`); `red_juguete(4)` has the same state space as I1; E4 code unchanged; replanning demo and `p = 0` sanity give the expected results; `python3 visualizacion.py` regenerates byte-identical frames.
@@ -757,7 +757,7 @@ Everything here uses numbers measured **after** Eloísa's `Cargada` change (2026
 - **References are mandatory** for any reused library, figure or idea (NetworkX, Matplotlib, the textbook). Teamwork is graded: both must speak.
 
 ### 10.2 Suggested slide outline (≈ 10 min)
-Proposed split; Eloísa's parts are in *italics* (she owns the domain, heuristics and E1–E3, E5–E6), adjust together.
+Proposed split; Eloísa's parts are in *italics* (she owns the domain, heuristics and E1–E3, E5), adjust together.
 
 | # | Slide | ~min | Who | Content / figure |
 |---|---|---|---|---|
@@ -855,12 +855,12 @@ Tips: one message per slide; read numbers from the slide, not from memory; rehea
 - ⚠️ **Heuristics:** better-informed (hmax/hadd) ≠ faster: fewer nodes but much more time per node; on I1 hprec and hmax expand almost the same.
 - ⚠️ **Robustness depends on the grid, not on the planner:** with no spare capacity a failure is final (and the planner proves it quickly); with spares, line failures are almost always absorbed, plant failures much less.
 - ⚠️ **Model simplifications:** no real power flows/voltages; voltage stays after a plant trip; no cascades. Worth saying as future work.
-- 🔭 **Future work:** action index by precondition (faster successor generation), symmetry reduction across zones, plans as partial orders (parallel maneuvers, `programacion.py`), richer failure model.
+- 🔭 **Future work:** action index by precondition (faster successor generation), symmetry reduction across zones, plans as partial orders (which maneuvers can run in parallel, with durations and limited crews: total restoration time and critical path), the FF heuristic (hFF), richer failure model.
 
 ### 10.7 Personal contribution (for the "who did what" slide)
 From the README ownership table and this plan:
 - **Milagros:** planner (`planificador.py`: UCS/A*/greedy, tie-break, validation); instances (`instancias.py`: I1–I3 design and resizing, `validar`, generator G(n), `red_i2_reserva`); aggregated version (`dominio_agregado.py`, equivalence proof); replanning (`replanificacion.py`); experiment E4; visualisation (`visualizacion.py`, frames).
-- **Eloísa:** domain and grounding (`dominio.py`, `funciones_auxiliares.py`, incl. the `Cargada` → `Suministrada` fix); heuristics (`heuristicas.py`); experiments E1–E3 (and optional E5–E6) in `experimentos.py`.
+- **Eloísa:** domain and grounding (`dominio.py`, `funciones_auxiliares.py`, incl. the `Cargada` → `Suministrada` fix); heuristics (`heuristicas.py`); experiments E1–E3 and E5 in `experimentos.py`.
 - **Both:** `main.py` (entry point; full CLI with limits, frames and failure demo written by Milagros on 2026-10-14), README.
 - **Eloísa (added in PR #3):** `analisis.py` (exact state space, trap / dead-end states), `figuras.py` (all experiment plots), experiments E1, E2, E3, E5 (section 5e).
 - Check with Eloísa that this split is exact before putting it on a slide; the rubric rewards a **balanced and explicit** split.
@@ -893,7 +893,7 @@ Correctness is verified (sections 5d, 5e). Decisions taken by Milagros on 2026-1
 
 | # | Item | Status |
 |---|---|---|
-| 1 | Unfinished stubs: `programacion.py` (Milagros), `heuristicas.hff`, `experimentos.e6` (Eloísa) | **open**: Milagros decides on `programacion.py` (E6 depends on it) |
+| 1 | Unfinished stubs: `programacion.py` (Milagros), `heuristicas.hff`, `experimentos.e6` (Eloísa) | ✅ deleted (decision: Milagros); listed as future work in 10.6. Tell Eloísa |
 | 2 | README matches the code: `dele`, `dominio_agregado.py`, `I2-reserva`, every `main.py` option, `visualizacion.py`, macOS/Linux venv, references | ✅ done |
 | 3 | Generative-AI use declaration | Milagros writes it separately (README points to it) |
 | 4 | Commit and push to `main` when everything is done | pending |

@@ -132,23 +132,4 @@ def hadd(estado, objetivo, acciones):
     return sum(costes[meta] for meta in objetivo)
 
 
-def hff(estado, objetivo, acciones):
-    """Heurística h_FF: coste de un plan relajado (opcional, sin implementar).
-
-    No admisible. No está en HEURISTICAS mientras no se implemente.
-
-    Args:
-        estado (frozenset[str]): Átomos ciertos en el estado.
-        objetivo (frozenset[str]): Átomos que deben cumplirse.
-        acciones (list[Accion]): Acciones instanciadas del problema.
-
-    Returns:
-        float: Coste del plan relajado extraído.
-
-    Raises:
-        NotImplementedError: Pendiente de implementar.
-    """
-    raise NotImplementedError
-
-
 HEURISTICAS = {"h0": h0, "hprec": hprec, "hmax": hmax, "hadd": hadd}

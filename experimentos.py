@@ -952,12 +952,7 @@ def e5():
     print(f"\nE5 terminado en {time.perf_counter() - inicio:.0f} s.")
 
 
-def e6():
-    """(Opcional) ¿El plan con menos maniobras es el más rápido? Programar I2/I3."""
-    raise NotImplementedError
-
-
-EXPERIMENTOS = {"E1": e1, "E2": e2, "E3": e3, "E4": e4, "E5": e5, "E6": e6}
+EXPERIMENTOS = {"E1": e1, "E2": e2, "E3": e3, "E4": e4, "E5": e5}
 
 if __name__ == "__main__":
     for nombre in sys.argv[1:] or ["E1", "E2", "E3"]:
