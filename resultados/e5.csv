@@ -1,0 +1,211 @@
+familia,red,holgura,bloques,estados,pct_trampa,pct_sin_salida,configuracion,resultado,coste,longitud,deslastres,expandidos,generados,tiempo,plan_valido
+I1,I1,-1,5,5,0.0,100.0,A* + hprec,sin_solucion,,,,5,4,0.0,
+I1,I1,-1,5,5,0.0,100.0,A* + hadd,sin_solucion,,,,3,3,0.001,
+I1,I1,-1,5,5,0.0,100.0,voraz + hadd,sin_solucion,,,,3,3,0.001,
+I2,I2,-1,7,258,0.0,100.0,A* + hprec,sin_solucion,,,,258,755,0.005,
+I2,I2,-1,7,258,0.0,100.0,A* + hadd,sin_solucion,,,,123,390,0.09,
+I2,I2,-1,7,258,0.0,100.0,voraz + hadd,sin_solucion,,,,123,390,0.094,
+G(6),G(6) semilla 0,-1,6,1128,0.0,100.0,A* + hprec,sin_solucion,,,,1128,5790,0.026,
+G(6),G(6) semilla 0,-1,6,1128,0.0,100.0,A* + hadd,sin_solucion,,,,1128,5790,0.322,
+G(6),G(6) semilla 0,-1,6,1128,0.0,100.0,voraz + hadd,sin_solucion,,,,1284,6699,0.398,
+G(6),G(6) semilla 1,-1,7,3752,0.0,100.0,A* + hprec,sin_solucion,,,,3752,21030,0.178,
+G(6),G(6) semilla 1,-1,7,3752,0.0,100.0,A* + hadd,sin_solucion,,,,4044,22786,2.219,
+G(6),G(6) semilla 1,-1,7,3752,0.0,100.0,voraz + hadd,sin_solucion,,,,5240,29690,2.77,
+G(6),G(6) semilla 2,-1,7,3005,0.0,100.0,A* + hprec,sin_solucion,,,,3005,22889,0.104,
+G(6),G(6) semilla 2,-1,7,3005,0.0,100.0,A* + hadd,sin_solucion,,,,3005,22889,1.321,
+G(6),G(6) semilla 2,-1,7,3005,0.0,100.0,voraz + hadd,sin_solucion,,,,4724,37296,2.399,
+G(6),G(6) semilla 3,-1,3,361,0.0,100.0,A* + hprec,sin_solucion,,,,361,1561,0.004,
+G(6),G(6) semilla 3,-1,3,361,0.0,100.0,A* + hadd,sin_solucion,,,,361,1561,0.044,
+G(6),G(6) semilla 3,-1,3,361,0.0,100.0,voraz + hadd,sin_solucion,,,,377,1640,0.054,
+G(6),G(6) semilla 4,-1,3,119,0.0,100.0,A* + hprec,sin_solucion,,,,119,362,0.001,
+G(6),G(6) semilla 4,-1,3,119,0.0,100.0,A* + hadd,sin_solucion,,,,119,362,0.015,
+G(6),G(6) semilla 4,-1,3,119,0.0,100.0,voraz + hadd,sin_solucion,,,,119,362,0.015,
+G(6),G(6) semilla 5,-1,6,2031,0.0,100.0,A* + hprec,sin_solucion,,,,2031,10031,0.046,
+G(6),G(6) semilla 5,-1,6,2031,0.0,100.0,A* + hadd,sin_solucion,,,,2031,10031,0.74,
+G(6),G(6) semilla 5,-1,6,2031,0.0,100.0,voraz + hadd,sin_solucion,,,,2254,11173,0.836,
+G(6),G(6) semilla 6,-1,8,2659,0.0,100.0,A* + hprec,sin_solucion,,,,2659,16122,0.096,
+G(6),G(6) semilla 6,-1,8,2659,0.0,100.0,A* + hadd,sin_solucion,,,,3044,18851,1.881,
+G(6),G(6) semilla 6,-1,8,2659,0.0,100.0,voraz + hadd,sin_solucion,,,,4262,26878,2.553,
+G(6),G(6) semilla 7,-1,2,113,0.0,100.0,A* + hprec,sin_solucion,,,,113,321,0.001,
+G(6),G(6) semilla 7,-1,2,113,0.0,100.0,A* + hadd,sin_solucion,,,,81,257,0.008,
+G(6),G(6) semilla 7,-1,2,113,0.0,100.0,voraz + hadd,sin_solucion,,,,81,257,0.008,
+I1,I1,0,6,62,9.68,0.0,A* + hprec,resuelto,14,14,0,47,158,0.001,True
+I1,I1,0,6,62,9.68,0.0,A* + hadd,resuelto,14,14,0,33,119,0.015,True
+I1,I1,0,6,62,9.68,0.0,voraz + hadd,resuelto,14,14,0,26,84,0.013,True
+I2,I2,0,8,3287,9.28,1.16,A* + hprec,resuelto,23,23,0,2881,11931,0.09,True
+I2,I2,0,8,3287,9.28,1.16,A* + hadd,resuelto,23,23,0,1694,8001,1.277,True
+I2,I2,0,8,3287,9.28,1.16,voraz + hadd,resuelto,23,23,0,94,434,0.108,True
+G(6),G(6) semilla 0,0,7,1438,0.0,0.0,A* + hprec,resuelto,19,19,0,1104,5838,0.028,True
+G(6),G(6) semilla 0,0,7,1438,0.0,0.0,A* + hadd,resuelto,19,19,0,319,2064,0.219,True
+G(6),G(6) semilla 0,0,7,1438,0.0,0.0,voraz + hadd,resuelto,19,19,0,33,198,0.046,True
+G(6),G(6) semilla 1,0,8,7212,2.2,0.0,A* + hprec,resuelto,20,20,0,5345,32618,0.186,True
+G(6),G(6) semilla 1,0,8,7212,2.2,0.0,A* + hadd,resuelto,20,20,0,2323,16674,2.878,True
+G(6),G(6) semilla 1,0,8,7212,2.2,0.0,voraz + hadd,resuelto,20,20,0,230,1637,0.392,True
+G(6),G(6) semilla 2,0,8,3810,0.0,0.0,A* + hprec,resuelto,20,20,0,2358,18266,0.095,True
+G(6),G(6) semilla 2,0,8,3810,0.0,0.0,A* + hadd,resuelto,20,20,0,1243,11264,1.384,True
+G(6),G(6) semilla 2,0,8,3810,0.0,0.0,voraz + hadd,resuelto,20,20,0,40,334,0.126,True
+G(6),G(6) semilla 3,0,4,529,0.0,0.0,A* + hprec,resuelto,11,11,0,196,916,0.003,True
+G(6),G(6) semilla 3,0,4,529,0.0,0.0,A* + hadd,resuelto,11,11,0,59,366,0.033,True
+G(6),G(6) semilla 3,0,4,529,0.0,0.0,voraz + hadd,resuelto,11,11,0,16,94,0.021,True
+G(6),G(6) semilla 4,0,4,175,0.0,0.0,A* + hprec,resuelto,12,12,0,113,388,0.001,True
+G(6),G(6) semilla 4,0,4,175,0.0,0.0,A* + hadd,resuelto,12,12,0,37,165,0.017,True
+G(6),G(6) semilla 4,0,4,175,0.0,0.0,voraz + hadd,resuelto,12,12,0,17,68,0.01,True
+G(6),G(6) semilla 5,0,7,2887,0.76,0.0,A* + hprec,resuelto,18,18,0,2471,12919,0.062,True
+G(6),G(6) semilla 5,0,7,2887,0.76,0.0,A* + hadd,resuelto,18,18,0,1004,6025,0.784,True
+G(6),G(6) semilla 5,0,7,2887,0.76,0.0,voraz + hadd,resuelto,18,18,0,99,567,0.105,True
+G(6),G(6) semilla 6,0,9,4579,2.38,0.0,A* + hprec,resuelto,24,24,0,3839,23838,0.153,True
+G(6),G(6) semilla 6,0,9,4579,2.38,0.0,A* + hadd,resuelto,24,24,0,1121,8578,1.566,True
+G(6),G(6) semilla 6,0,9,4579,2.38,0.0,voraz + hadd,resuelto,26,26,1,57,404,0.17,True
+G(6),G(6) semilla 7,0,3,229,0.0,0.0,A* + hprec,resuelto,6,6,0,28,120,0.0,True
+G(6),G(6) semilla 7,0,3,229,0.0,0.0,A* + hadd,resuelto,6,6,0,6,27,0.003,True
+G(6),G(6) semilla 7,0,3,229,0.0,0.0,voraz + hadd,resuelto,6,6,0,6,27,0.003,True
+I1,I1,1,7,141,4.96,0.0,A* + hprec,resuelto,14,14,0,94,381,0.002,True
+I1,I1,1,7,141,4.96,0.0,A* + hadd,resuelto,14,14,0,47,181,0.025,True
+I1,I1,1,7,141,4.96,0.0,voraz + hadd,resuelto,14,14,0,29,113,0.021,True
+I2,I2,1,9,8800,3.34,0.75,A* + hprec,resuelto,21,21,0,3574,17230,0.13,True
+I2,I2,1,9,8800,3.34,0.75,A* + hadd,resuelto,21,21,0,1425,8626,1.976,True
+I2,I2,1,9,8800,3.34,0.75,voraz + hadd,resuelto,21,21,0,96,542,0.205,True
+G(6),G(6) semilla 0,1,8,1748,0.0,0.0,A* + hprec,resuelto,19,19,0,1120,5957,0.037,True
+G(6),G(6) semilla 0,1,8,1748,0.0,0.0,A* + hadd,resuelto,19,19,0,319,2066,0.264,True
+G(6),G(6) semilla 0,1,8,1748,0.0,0.0,voraz + hadd,resuelto,19,19,0,33,200,0.057,True
+G(6),G(6) semilla 1,1,9,9918,1.38,0.0,A* + hprec,resuelto,18,18,0,3364,20462,0.134,True
+G(6),G(6) semilla 1,1,9,9918,1.38,0.0,A* + hadd,resuelto,18,18,0,727,5782,1.799,True
+G(6),G(6) semilla 1,1,9,9918,1.38,0.0,voraz + hadd,resuelto,20,20,0,230,1639,0.47,True
+G(6),G(6) semilla 2,1,9,4615,0.0,0.0,A* + hprec,resuelto,20,20,0,2380,18491,0.103,True
+G(6),G(6) semilla 2,1,9,4615,0.0,0.0,A* + hadd,resuelto,20,20,0,1243,11266,1.591,True
+G(6),G(6) semilla 2,1,9,4615,0.0,0.0,voraz + hadd,resuelto,20,20,0,40,336,0.157,True
+G(6),G(6) semilla 3,1,5,697,0.0,0.0,A* + hprec,resuelto,11,11,0,199,944,0.003,True
+G(6),G(6) semilla 3,1,5,697,0.0,0.0,A* + hadd,resuelto,11,11,0,59,368,0.043,True
+G(6),G(6) semilla 3,1,5,697,0.0,0.0,voraz + hadd,resuelto,11,11,0,16,96,0.019,True
+G(6),G(6) semilla 4,1,5,231,0.0,0.0,A* + hprec,resuelto,12,12,0,119,418,0.004,True
+G(6),G(6) semilla 4,1,5,231,0.0,0.0,A* + hadd,resuelto,12,12,0,37,167,0.025,True
+G(6),G(6) semilla 4,1,5,231,0.0,0.0,voraz + hadd,resuelto,12,12,0,17,70,0.013,True
+G(6),G(6) semilla 5,1,8,3871,0.57,0.0,A* + hprec,resuelto,18,18,0,2960,16053,0.088,True
+G(6),G(6) semilla 5,1,8,3871,0.57,0.0,A* + hadd,resuelto,18,18,0,1071,6576,1.018,True
+G(6),G(6) semilla 5,1,8,3871,0.57,0.0,voraz + hadd,resuelto,18,18,0,99,569,0.127,True
+G(6),G(6) semilla 6,1,10,6829,1.38,0.0,A* + hprec,resuelto,24,24,0,5418,34750,0.251,True
+G(6),G(6) semilla 6,1,10,6829,1.38,0.0,A* + hadd,resuelto,24,24,0,1759,13646,2.758,True
+G(6),G(6) semilla 6,1,10,6829,1.38,0.0,voraz + hadd,resuelto,24,24,0,65,474,0.222,True
+G(6),G(6) semilla 7,1,4,277,0.0,0.0,A* + hprec,resuelto,6,6,0,28,120,0.0,True
+G(6),G(6) semilla 7,1,4,277,0.0,0.0,A* + hadd,resuelto,6,6,0,6,27,0.004,True
+G(6),G(6) semilla 7,1,4,277,0.0,0.0,voraz + hadd,resuelto,6,6,0,6,27,0.004,True
+I1,I1,2,8,173,4.05,0.0,A* + hprec,resuelto,14,14,0,94,381,0.002,True
+I1,I1,2,8,173,4.05,0.0,A* + hadd,resuelto,14,14,0,47,181,0.032,True
+I1,I1,2,8,173,4.05,0.0,voraz + hadd,resuelto,14,14,0,29,113,0.028,True
+I2,I2,2,10,17898,0.92,0.0,A* + hprec,resuelto,19,19,0,2450,12741,0.098,True
+I2,I2,2,10,17898,0.92,0.0,A* + hadd,resuelto,19,19,0,293,2106,0.818,True
+I2,I2,2,10,17898,0.92,0.0,voraz + hadd,resuelto,19,19,0,28,178,0.113,True
+G(6),G(6) semilla 0,2,9,2058,0.0,0.0,A* + hprec,resuelto,19,19,0,1130,5996,0.035,True
+G(6),G(6) semilla 0,2,9,2058,0.0,0.0,A* + hadd,resuelto,19,19,0,319,2066,0.312,True
+G(6),G(6) semilla 0,2,9,2058,0.0,0.0,voraz + hadd,resuelto,19,19,0,33,200,0.066,True
+G(6),G(6) semilla 1,2,10,15149,0.51,0.0,A* + hprec,resuelto,18,18,0,4473,29008,0.218,True
+G(6),G(6) semilla 1,2,10,15149,0.51,0.0,A* + hadd,resuelto,18,18,0,1172,9673,3.175,True
+G(6),G(6) semilla 1,2,10,15149,0.51,0.0,voraz + hadd,resuelto,20,20,0,316,2265,0.694,True
+G(6),G(6) semilla 2,2,10,5420,0.0,0.0,A* + hprec,resuelto,20,20,0,2385,18530,0.105,True
+G(6),G(6) semilla 2,2,10,5420,0.0,0.0,A* + hadd,resuelto,20,20,0,1243,11266,1.869,True
+G(6),G(6) semilla 2,2,10,5420,0.0,0.0,voraz + hadd,resuelto,20,20,0,40,336,0.191,True
+G(6),G(6) semilla 3,2,6,865,0.0,0.0,A* + hprec,resuelto,11,11,0,199,947,0.003,True
+G(6),G(6) semilla 3,2,6,865,0.0,0.0,A* + hadd,resuelto,11,11,0,59,368,0.055,True
+G(6),G(6) semilla 3,2,6,865,0.0,0.0,voraz + hadd,resuelto,11,11,0,16,96,0.021,True
+G(6),G(6) semilla 4,2,6,287,0.0,0.0,A* + hprec,resuelto,12,12,0,121,428,0.002,True
+G(6),G(6) semilla 4,2,6,287,0.0,0.0,A* + hadd,resuelto,12,12,0,37,167,0.029,True
+G(6),G(6) semilla 4,2,6,287,0.0,0.0,voraz + hadd,resuelto,12,12,0,17,70,0.017,True
+G(6),G(6) semilla 5,2,9,5001,0.0,0.0,A* + hprec,resuelto,16,16,0,1745,9554,0.053,True
+G(6),G(6) semilla 5,2,9,5001,0.0,0.0,A* + hadd,resuelto,16,16,0,228,1500,0.468,True
+G(6),G(6) semilla 5,2,9,5001,0.0,0.0,voraz + hadd,resuelto,16,16,0,22,146,0.075,True
+G(6),G(6) semilla 6,2,11,8076,1.16,0.0,A* + hprec,resuelto,24,24,0,5801,37705,0.295,True
+G(6),G(6) semilla 6,2,11,8076,1.16,0.0,A* + hadd,resuelto,24,24,0,1759,13703,3.176,True
+G(6),G(6) semilla 6,2,11,8076,1.16,0.0,voraz + hadd,resuelto,24,24,0,65,474,0.25,True
+G(6),G(6) semilla 7,2,5,421,0.0,0.0,A* + hprec,resuelto,6,6,0,29,128,0.0,True
+G(6),G(6) semilla 7,2,5,421,0.0,0.0,A* + hadd,resuelto,6,6,0,6,29,0.005,True
+G(6),G(6) semilla 7,2,5,421,0.0,0.0,voraz + hadd,resuelto,6,6,0,6,29,0.006,True
+I1,I1,3,9,283,1.41,0.0,A* + hprec,resuelto,14,14,0,140,626,0.004,True
+I1,I1,3,9,283,1.41,0.0,A* + hadd,resuelto,14,14,0,82,376,0.069,True
+I1,I1,3,9,283,1.41,0.0,voraz + hadd,resuelto,14,14,0,39,176,0.041,True
+I2,I2,3,11,26909,0.72,0.0,A* + hprec,resuelto,19,19,0,2481,12982,0.101,True
+I2,I2,3,11,26909,0.72,0.0,A* + hadd,resuelto,19,19,0,293,2106,0.918,True
+I2,I2,3,11,26909,0.72,0.0,voraz + hadd,resuelto,19,19,0,28,178,0.132,True
+G(6),G(6) semilla 0,3,10,2368,0.0,0.0,A* + hprec,resuelto,19,19,0,1132,6009,0.044,True
+G(6),G(6) semilla 0,3,10,2368,0.0,0.0,A* + hadd,resuelto,19,19,0,319,2066,0.363,True
+G(6),G(6) semilla 0,3,10,2368,0.0,0.0,voraz + hadd,resuelto,19,19,0,33,200,0.077,True
+G(6),G(6) semilla 1,3,11,20509,0.27,0.0,A* + hprec,resuelto,18,18,0,5062,33631,0.244,True
+G(6),G(6) semilla 1,3,11,20509,0.27,0.0,A* + hadd,resuelto,18,18,0,1232,10356,3.937,True
+G(6),G(6) semilla 1,3,11,20509,0.27,0.0,voraz + hadd,resuelto,18,18,0,178,1339,0.569,True
+G(6),G(6) semilla 2,3,11,6225,0.0,0.0,A* + hprec,resuelto,20,20,0,2385,18535,0.115,True
+G(6),G(6) semilla 2,3,11,6225,0.0,0.0,A* + hadd,resuelto,20,20,0,1243,11266,2.142,True
+G(6),G(6) semilla 2,3,11,6225,0.0,0.0,voraz + hadd,resuelto,20,20,0,40,336,0.241,True
+G(6),G(6) semilla 3,3,7,1033,0.0,0.0,A* + hprec,resuelto,11,11,0,199,947,0.004,True
+G(6),G(6) semilla 3,3,7,1033,0.0,0.0,A* + hadd,resuelto,11,11,0,59,368,0.074,True
+G(6),G(6) semilla 3,3,7,1033,0.0,0.0,voraz + hadd,resuelto,11,11,0,16,96,0.027,True
+G(6),G(6) semilla 4,3,7,343,0.0,0.0,A* + hprec,resuelto,12,12,0,121,430,0.002,True
+G(6),G(6) semilla 4,3,7,343,0.0,0.0,A* + hadd,resuelto,12,12,0,37,167,0.037,True
+G(6),G(6) semilla 4,3,7,343,0.0,0.0,voraz + hadd,resuelto,12,12,0,17,70,0.034,True
+G(6),G(6) semilla 5,3,10,6135,0.0,0.0,A* + hprec,resuelto,16,16,0,1770,9765,0.061,True
+G(6),G(6) semilla 5,3,10,6135,0.0,0.0,A* + hadd,resuelto,16,16,0,228,1502,0.548,True
+G(6),G(6) semilla 5,3,10,6135,0.0,0.0,voraz + hadd,resuelto,16,16,0,22,148,0.091,True
+G(6),G(6) semilla 6,3,12,10856,0.53,0.0,A* + hprec,resuelto,24,24,0,7310,48724,0.388,True
+G(6),G(6) semilla 6,3,12,10856,0.53,0.0,A* + hadd,resuelto,24,24,0,2385,18790,4.763,True
+G(6),G(6) semilla 6,3,12,10856,0.53,0.0,voraz + hadd,resuelto,24,24,0,98,730,0.347,True
+G(6),G(6) semilla 7,3,6,565,0.0,0.0,A* + hprec,resuelto,6,6,0,29,129,0.0,True
+G(6),G(6) semilla 7,3,6,565,0.0,0.0,A* + hadd,resuelto,6,6,0,6,29,0.007,True
+G(6),G(6) semilla 7,3,6,565,0.0,0.0,voraz + hadd,resuelto,6,6,0,6,29,0.007,True
+I1,I1,4,10,331,1.21,0.0,A* + hprec,resuelto,14,14,0,140,626,0.004,True
+I1,I1,4,10,331,1.21,0.0,A* + hadd,resuelto,14,14,0,82,376,0.072,True
+I1,I1,4,10,331,1.21,0.0,voraz + hadd,resuelto,14,14,0,39,176,0.049,True
+I2,I2,4,12,37028,0.42,0.0,A* + hprec,resuelto,19,19,0,2551,13398,0.108,True
+I2,I2,4,12,37028,0.42,0.0,A* + hadd,resuelto,19,19,0,293,2106,1.052,True
+I2,I2,4,12,37028,0.42,0.0,voraz + hadd,resuelto,19,19,0,28,178,0.147,True
+G(6),G(6) semilla 0,4,11,2678,0.0,0.0,A* + hprec,resuelto,19,19,0,1132,6011,0.044,True
+G(6),G(6) semilla 0,4,11,2678,0.0,0.0,A* + hadd,resuelto,19,19,0,319,2066,0.42,True
+G(6),G(6) semilla 0,4,11,2678,0.0,0.0,voraz + hadd,resuelto,19,19,0,33,200,0.097,True
+G(6),G(6) semilla 1,4,12,26215,0.21,0.0,A* + hprec,resuelto,18,18,0,5407,36576,0.271,True
+G(6),G(6) semilla 1,4,12,26215,0.21,0.0,A* + hadd,resuelto,18,18,0,1258,10668,4.596,True
+G(6),G(6) semilla 1,4,12,26215,0.21,0.0,voraz + hadd,resuelto,18,18,0,178,1341,0.654,True
+G(6),G(6) semilla 2,4,12,7030,0.0,0.0,A* + hprec,resuelto,20,20,0,2385,18535,0.14,True
+G(6),G(6) semilla 2,4,12,7030,0.0,0.0,A* + hadd,resuelto,20,20,0,1243,11266,2.419,True
+G(6),G(6) semilla 2,4,12,7030,0.0,0.0,voraz + hadd,resuelto,20,20,0,40,336,0.236,True
+G(6),G(6) semilla 3,4,8,1201,0.0,0.0,A* + hprec,resuelto,11,11,0,199,947,0.007,True
+G(6),G(6) semilla 3,4,8,1201,0.0,0.0,A* + hadd,resuelto,11,11,0,59,368,0.083,True
+G(6),G(6) semilla 3,4,8,1201,0.0,0.0,voraz + hadd,resuelto,11,11,0,16,96,0.047,True
+G(6),G(6) semilla 4,4,8,399,0.0,0.0,A* + hprec,resuelto,12,12,0,121,430,0.002,True
+G(6),G(6) semilla 4,4,8,399,0.0,0.0,A* + hadd,resuelto,12,12,0,37,167,0.045,True
+G(6),G(6) semilla 4,4,8,399,0.0,0.0,voraz + hadd,resuelto,12,12,0,17,70,0.025,True
+G(6),G(6) semilla 5,4,11,7269,0.0,0.0,A* + hprec,resuelto,16,16,0,1773,9802,0.07,True
+G(6),G(6) semilla 5,4,11,7269,0.0,0.0,A* + hadd,resuelto,16,16,0,228,1502,0.634,True
+G(6),G(6) semilla 5,4,11,7269,0.0,0.0,voraz + hadd,resuelto,16,16,0,22,148,0.105,True
+G(6),G(6) semilla 6,4,13,13745,0.18,0.0,A* + hprec,resuelto,24,24,0,8616,58602,0.525,True
+G(6),G(6) semilla 6,4,13,13745,0.18,0.0,A* + hadd,resuelto,24,24,0,2921,23281,6.406,True
+G(6),G(6) semilla 6,4,13,13745,0.18,0.0,voraz + hadd,resuelto,24,24,0,86,582,0.356,True
+G(6),G(6) semilla 7,4,7,709,0.0,0.0,A* + hprec,resuelto,6,6,0,29,129,0.001,True
+G(6),G(6) semilla 7,4,7,709,0.0,0.0,A* + hadd,resuelto,6,6,0,6,29,0.009,True
+G(6),G(6) semilla 7,4,7,709,0.0,0.0,voraz + hadd,resuelto,6,6,0,6,29,0.009,True
+I1,I1,6,12,527,0.0,0.0,A* + hprec,resuelto,12,12,0,67,269,0.003,True
+I1,I1,6,12,527,0.0,0.0,A* + hadd,resuelto,12,12,0,28,142,0.065,True
+I1,I1,6,12,527,0.0,0.0,voraz + hadd,resuelto,12,12,0,17,80,0.055,True
+I2,I2,6,14,96418,0.06,0.0,A* + hprec,resuelto,19,19,0,3555,20330,0.18,True
+I2,I2,6,14,96418,0.06,0.0,A* + hadd,resuelto,19,19,0,354,2746,1.821,True
+I2,I2,6,14,96418,0.06,0.0,voraz + hadd,resuelto,19,19,0,31,212,0.255,True
+G(6),G(6) semilla 0,6,13,3298,0.0,0.0,A* + hprec,resuelto,19,19,0,1132,6011,0.051,True
+G(6),G(6) semilla 0,6,13,3298,0.0,0.0,A* + hadd,resuelto,19,19,0,319,2066,0.543,True
+G(6),G(6) semilla 0,6,13,3298,0.0,0.0,voraz + hadd,resuelto,19,19,0,33,200,0.124,True
+G(6),G(6) semilla 1,6,14,41992,0.05,0.0,A* + hprec,resuelto,18,18,0,6260,44050,0.398,True
+G(6),G(6) semilla 1,6,14,41992,0.05,0.0,A* + hadd,resuelto,18,18,0,1578,13704,7.138,True
+G(6),G(6) semilla 1,6,14,41992,0.05,0.0,voraz + hadd,resuelto,18,18,0,169,1306,0.82,True
+G(6),G(6) semilla 2,6,14,8640,0.0,0.0,A* + hprec,resuelto,20,20,0,2385,18535,0.148,True
+G(6),G(6) semilla 2,6,14,8640,0.0,0.0,A* + hadd,resuelto,20,20,0,1243,11266,3.043,True
+G(6),G(6) semilla 2,6,14,8640,0.0,0.0,voraz + hadd,resuelto,20,20,0,40,336,0.302,True
+G(6),G(6) semilla 3,6,10,1537,0.0,0.0,A* + hprec,resuelto,11,11,0,199,947,0.005,True
+G(6),G(6) semilla 3,6,10,1537,0.0,0.0,A* + hadd,resuelto,11,11,0,59,368,0.121,True
+G(6),G(6) semilla 3,6,10,1537,0.0,0.0,voraz + hadd,resuelto,11,11,0,16,96,0.045,True
+G(6),G(6) semilla 4,6,10,511,0.0,0.0,A* + hprec,resuelto,12,12,0,121,430,0.003,True
+G(6),G(6) semilla 4,6,10,511,0.0,0.0,A* + hadd,resuelto,12,12,0,37,167,0.07,True
+G(6),G(6) semilla 4,6,10,511,0.0,0.0,voraz + hadd,resuelto,12,12,0,17,70,0.036,True
+G(6),G(6) semilla 5,6,13,10319,0.0,0.0,A* + hprec,resuelto,16,16,0,1820,10211,0.084,True
+G(6),G(6) semilla 5,6,13,10319,0.0,0.0,A* + hadd,resuelto,16,16,0,228,1502,0.803,True
+G(6),G(6) semilla 5,6,13,10319,0.0,0.0,voraz + hadd,resuelto,16,16,0,22,148,0.137,True
+G(6),G(6) semilla 6,6,15,18857,0.04,0.0,A* + hprec,resuelto,24,24,0,9841,68075,0.713,True
+G(6),G(6) semilla 6,6,15,18857,0.04,0.0,A* + hadd,resuelto,24,24,0,3265,26337,8.954,True
+G(6),G(6) semilla 6,6,15,18857,0.04,0.0,voraz + hadd,resuelto,24,24,0,87,610,0.468,True
+G(6),G(6) semilla 7,6,9,997,0.0,0.0,A* + hprec,resuelto,6,6,0,29,129,0.001,True
+G(6),G(6) semilla 7,6,9,997,0.0,0.0,A* + hadd,resuelto,6,6,0,6,29,0.013,True
+G(6),G(6) semilla 7,6,9,997,0.0,0.0,voraz + hadd,resuelto,6,6,0,6,29,0.018,True

@@ -1,0 +1,16 @@
+instancia,configuracion,resultado,coste,longitud,deslastres,expandidos,generados,tiempo,plan_valido,h_inicial,ms_por_nodo,ramificacion_efectiva,optimo,maniobras_de_mas,precision_inicial
+I1,A* + h0,resuelto,14,14,0,61,214,0.002,True,0,0.033,1.33,14,0,0.0
+I1,A* + hprec,resuelto,14,14,0,47,158,0.002,True,5,0.043,1.294,14,0,0.36
+I1,A* + hmax,resuelto,14,14,0,54,186,0.025,True,5,0.463,1.313,14,0,0.36
+I1,A* + hadd,resuelto,14,14,0,33,119,0.028,True,38,0.848,1.261,14,0,2.71
+I1,voraz + hadd,resuelto,14,14,0,26,84,0.019,True,38,0.731,1.22,14,0,2.71
+I2,A* + h0,resuelto,23,23,0,3252,13485,0.126,True,0,0.039,1.436,23,0,0.0
+I2,A* + hprec,resuelto,23,23,0,2881,11931,0.095,True,7,0.033,1.427,23,0,0.3
+I2,A* + hmax,resuelto,23,23,0,2868,12288,1.702,True,6,0.593,1.429,23,0,0.26
+I2,A* + hadd,resuelto,23,23,0,1694,8001,1.263,True,51,0.746,1.4,23,0,2.22
+I2,voraz + hadd,resuelto,23,23,0,94,434,0.115,True,51,1.223,1.207,23,0,2.22
+I3,A* + h0,resuelto,26,26,0,88689,566640,3.609,True,0,0.041,1.603,26,0,0.0
+I3,A* + hprec,resuelto,26,27,0,76865,484275,3.195,True,10,0.042,1.564,26,0,0.38
+I3,A* + hmax,resuelto,26,27,0,52841,384468,34.321,True,5,0.65,1.549,26,0,0.19
+I3,A* + hadd,resuelto,26,26,0,17046,134286,16.209,True,65,0.951,1.51,26,0,2.5
+I3,voraz + hadd,resuelto,26,26,0,164,1094,0.162,True,65,0.988,1.227,26,0,2.5

@@ -1,0 +1,10 @@
+instancia,heuristica,estados,estados_trampa,estados_sin_salida,precision_media,pct_sobrestima,precision_en_trampas,pct_sin_salida_detectados
+I1,hprec,62,6,0,0.638,0.0,0.291,
+I1,hmax,62,6,0,0.402,0.0,0.194,
+I1,hadd,62,6,0,0.889,3.3,0.642,
+I2,hprec,3287,305,38,0.538,0.0,0.276,0.0
+I2,hmax,3287,305,38,0.374,0.0,0.273,100.0
+I2,hadd,3287,305,38,0.826,10.4,0.704,100.0
+I3,hprec,89353,9257,29527,0.647,0.0,0.442,0.0
+I3,hmax,89353,9257,29527,0.458,0.0,0.312,100.0
+I3,hadd,89353,9257,29527,1.001,26.3,1.056,100.0
