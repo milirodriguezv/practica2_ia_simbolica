@@ -49,6 +49,7 @@ python main.py --instancia I1 --algoritmo astar --heuristica hmax --individual
 python main.py --instancia I3 --algoritmo ucs --heuristica h0
 python main.py --generada 4 --margen 1.5 --semilla 3 --heuristica hprec
 python main.py --instancia I1 --individual --figuras i1
+# Este ejemplo muestra un caso sin solución:
 python main.py --instancia I1 --heuristica hadd --fallo central:T1@11
 python main.py --instancia I2-reserva --heuristica hprec --prob-fallo 0.05 --semilla 8 --tipos-fallo central
 ```

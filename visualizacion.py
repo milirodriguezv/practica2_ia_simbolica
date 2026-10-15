@@ -1,4 +1,4 @@
-"""Dibujo de la red paso a paso 
+"""Dibujo de la red paso a paso
 
 Cada fotograma muestra un estado de la red:
     - Subestaciones: gris = sin tensión, amarillo = ConTension(s).
@@ -7,7 +7,7 @@ Cada fotograma muestra un estado de la red:
     - Interconexiones entre zonas: punteadas en morado; más gruesas cuando
       las dos zonas ya están acopladas (Alcanza).
     - Junto a cada subestación, sus centrales (en marcha, parada o
-      averiada) y sus cargas (suministrada o no); los hospitales llevan (H).
+      averiada) y sus cargas (suministrada o no); las prioritarias llevan (P).
 
 Solo se usan átomos que existen en las dos versiones del dominio
 (ConTension, EnMarcha, Operativa, Suministrada, Alcanza), así que sirve
@@ -19,7 +19,7 @@ import os
 
 import matplotlib
 
-matplotlib.use("Agg")  
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.lines import Line2D
@@ -37,7 +37,9 @@ MORADO = "#7b3fa0"  # interconexión entre zonas
 VERDE = "#2b8a3e"  # central en marcha / carga suministrada
 APAGADO = "#757575"  # central parada / carga sin suministro
 
-SEPARACION_GEMELAS = 0.04  # distancia entre líneas paralelas (en coordenadas del dibujo)
+SEPARACION_GEMELAS = (
+    0.04  # distancia entre líneas paralelas (en coordenadas del dibujo)
+)
 RADIO_ZONA = 0.45  # tamaño de cada zona; los centros de las zonas están a escala 1
 DISTANCIA_CERCA = 0.8  # subestaciones más cercanas estorban a los textos
 
@@ -220,7 +222,7 @@ def _etiquetas(red, estado, s):
     for k, (sub, tipo) in red.cargas.items():
         if sub != s:
             continue
-        nombre = f"{k} (H)" if tipo == "prioritaria" else k
+        nombre = f"{k} (P)" if tipo == "prioritaria" else k
         if atomo("Suministrada", k) in estado:
             etiquetas.append((f"{nombre} ✓", VERDE))
         else:
@@ -237,22 +239,58 @@ def _leyenda(red, ax):
         ax (matplotlib.axes.Axes): Ejes donde se dibuja.
     """
     elementos = [
-        Line2D([], [], marker="o", color="w", markerfacecolor=GRIS,
-               markeredgecolor="black", markersize=12, label="Sin tensión"),
-        Line2D([], [], marker="o", color="w", markerfacecolor=AMARILLO,
-               markeredgecolor="black", markersize=12, label="Con tensión"),
+        Line2D(
+            [],
+            [],
+            marker="o",
+            color="w",
+            markerfacecolor=GRIS,
+            markeredgecolor="black",
+            markersize=12,
+            label="Sin tensión",
+        ),
+        Line2D(
+            [],
+            [],
+            marker="o",
+            color="w",
+            markerfacecolor=AMARILLO,
+            markeredgecolor="black",
+            markersize=12,
+            label="Con tensión",
+        ),
         Line2D([], [], color=COLOR_LINEA, linewidth=2.5, label="Línea corta"),
-        Line2D([], [], color=COLOR_LINEA, linewidth=2.5, linestyle="--",
-               label="Línea larga"),
-        Line2D([], [], color=ROJO, linewidth=2.5, marker="X", markersize=10,
-               label="Línea averiada"),
+        Line2D(
+            [],
+            [],
+            color=COLOR_LINEA,
+            linewidth=2.5,
+            linestyle="--",
+            label="Línea larga",
+        ),
+        Line2D(
+            [],
+            [],
+            color=ROJO,
+            linewidth=2.5,
+            marker="X",
+            markersize=10,
+            label="Línea averiada",
+        ),
     ]
     if red.interconexiones:  # solo si hay más de una zona que acoplar
         elementos += [
-            Line2D([], [], color=MORADO, linewidth=2, linestyle=":",
-                   label="Interconexión"),
-            Line2D([], [], color=MORADO, linewidth=4, linestyle=":",
-                   label="Zonas acopladas"),
+            Line2D(
+                [], [], color=MORADO, linewidth=2, linestyle=":", label="Interconexión"
+            ),
+            Line2D(
+                [],
+                [],
+                color=MORADO,
+                linewidth=4,
+                linestyle=":",
+                label="Zonas acopladas",
+            ),
         ]
     ax.legend(
         handles=elementos,
@@ -267,7 +305,7 @@ def _leyenda(red, ax):
         0.5,
         -0.13,
         "✓ en marcha / suministrada     ✗ parada / sin suministro     "
-        "(H) hospital (carga prioritaria)",
+        "(P) carga prioritaria",
         transform=ax.transAxes,
         ha="center",
         va="top",
@@ -339,17 +377,25 @@ def dibujar_red(red, estado, ax=None, titulo=None, pos=None):
 
     # Subestaciones: círculo con su nombre dentro.
     nodos = list(red.subestaciones)
-    colores = [
-        AMARILLO if atomo("ConTension", s) in estado else GRIS for s in nodos
-    ]
+    colores = [AMARILLO if atomo("ConTension", s) in estado else GRIS for s in nodos]
     g = grafo(red)
     nx.draw_networkx_nodes(
-        g, pos, nodelist=nodos, node_color=colores, node_size=1100,
-        edgecolors="black", linewidths=1.5, ax=ax,
+        g,
+        pos,
+        nodelist=nodos,
+        node_color=colores,
+        node_size=1100,
+        edgecolors="black",
+        linewidths=1.5,
+        ax=ax,
     )
     nx.draw_networkx_labels(
-        g, pos, labels={s: s for s in nodos}, font_size=10,
-        font_weight="bold", ax=ax,
+        g,
+        pos,
+        labels={s: s for s in nodos},
+        font_size=10,
+        font_weight="bold",
+        ax=ax,
     )
 
     # Al lado de cada subestación, una línea de texto por central y por carga,
@@ -385,8 +431,14 @@ def dibujar_red(red, estado, ax=None, titulo=None, pos=None):
             x = sum(p[0] for p in puntos) / len(puntos)
             y = max(p[1] for p in puntos)
             ax.annotate(
-                f"Zona {z}", (x, y), xytext=(0, 26), textcoords="offset points",
-                ha="center", fontsize=12, color=MORADO, fontweight="bold",
+                f"Zona {z}",
+                (x, y),
+                xytext=(0, 26),
+                textcoords="offset points",
+                ha="center",
+                fontsize=12,
+                color=MORADO,
+                fontweight="bold",
             )
 
     # Margen alrededor de los nodos para que quepan los textos.
@@ -449,8 +501,13 @@ if __name__ == "__main__":
     red_i1 = instancias.red_i1()
     acciones, inicial, objetivo = instancias.cargar("I1", agregada=False)
     plan, estadisticas = buscar(
-        acciones, inicial, objetivo, hmax, "astar",
-        limite_tiempo=60, limite_nodos=300_000,
+        acciones,
+        inicial,
+        objetivo,
+        hmax,
+        "astar",
+        limite_tiempo=60,
+        limite_nodos=300_000,
     )
     print(estadisticas)
     if plan is not None:

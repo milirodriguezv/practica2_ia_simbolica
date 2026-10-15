@@ -204,7 +204,7 @@ def red_i2():
 
     Dos zonas, N y S, de tres subestaciones cada una, unidas por la
     interconexión S3-S5. Cada zona tiene una hidráulica (2 bloques), una
-    térmica (2 bloques), una línea larga y hospitales (P1 en N; P2 y P3 en
+    térmica (2 bloques), una línea larga y cargas prioritarias (P1 en N; P2 y P3 en
     S). Demanda: 6 cargas + 2 bloques de auxiliares = 8; oferta:
     2 + 2 + 2 + 2 = 8 (justa). Por zonas, N tiene un bloque de sobra
     (oferta 4, demanda 3) y a S le falta uno (oferta 4, demanda 5), así que
@@ -242,7 +242,7 @@ def red_i2():
         "T2": ("S6", "termica", 2),
     }
     red.cargas = {
-        "P1": ("S1", "prioritaria"),  # hospital
+        "P1": ("S1", "prioritaria"),  # carga prioritaria
         "B1": ("S3", "normal"),  # barrio
         "P2": ("S4", "prioritaria"),
         "B2": ("S5", "normal"),
@@ -303,8 +303,8 @@ def red_i3():
     Cuatro zonas (NO, NE, C y S), cada una con su hidráulica. NO tiene
     además la única térmica (T1, 3 bloques), que arranca con el bloque de
     H1 y luego alimenta las cargas de la zona. Hay dos líneas largas (en NE
-    y en C) y un hospital por zona; en NO1 la carga normal B1 tiene que
-    esperar al hospital P1 (regla de prioridad). Las interconexiones forman
+    y en C) y una carga prioritaria por zona; en NO1 la carga normal B1 tiene que
+    esperar a la carga prioritaria P1 (regla de prioridad). Las interconexiones forman
     una cadena a través del centro (NO-C, C-NE, C-S), así que pares como
     NO-S o NO-NE no tienen enlace directo y solo se alcanzan con
     ExtenderAlcance.
@@ -383,7 +383,7 @@ def _nueva_carga(red, subestacion, rng, contadores):
         red (dominio.Red): Red en construcción.
         subestacion (str): Subestación donde se conecta la carga.
         rng (random.Random): Generador de números aleatorios.
-        contadores (dict): Último número usado para 'P' (hospitales) y 'B'
+        contadores (dict): Último número usado para 'P' (cargas prioritarias) y 'B'
             (cargas normales); se actualiza aquí.
     """
     if rng.random() < PROB_PRIORITARIA:
@@ -458,7 +458,7 @@ def red_generada(n, margen=1.0, semilla=0):
         - Líneas: L<a>_<b>, entre Sa y Sb (a es el padre en el árbol).
         - Centrales: H<i> la hidráulica (autónoma) de la zona Zi; T1, T2,
           ... las térmicas.
-        - Cargas: P1, P2, ... los hospitales; B1, B2, ... las normales.
+        - Cargas: P1, P2, ... las cargas prioritarias; B1, B2, ... las normales.
 
     Args:
         n (int): Número de subestaciones (n >= 1).
@@ -482,7 +482,7 @@ def red_generada(n, margen=1.0, semilla=0):
         "P": 0,
         "B": 0,
         "T": 0,
-    }  # último número de hospitales, normales y térmicas
+    }  # último número de cargas prioritarias, normales y térmicas
 
     # 1. Zonas y reparto de subestaciones (las primeras zonas, una más).
     n_zonas = max(1, n // SUBESTACIONES_POR_ZONA)
